@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes do Cliente{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4">Cliente: {{ cliente.nome }}</h1>
+
+  <ul class="list-group mb-4">
+    <li class="list-group-item"><strong>Email:</strong> {{ cliente.email }}</li>
+    <li class="list-group-item"><strong>Telefone:</strong> {{ cliente.telefone }}</li>
+    <li class="list-group-item"><strong>Tipo:</strong> {{ cliente.get_tipo_display }}</li>
+    {% if cliente.tipo == 'F' %}
+      <li class="list-group-item"><strong>CPF:</strong> {{ cliente.cpf }}</li>
+      <li class="list-group-item"><strong>Data de Nascimento:</strong> {{ cliente.data_nascimento }}</li>
+    {% elif cliente.tipo == 'J' %}
+      <li class="list-group-item"><strong>CNPJ:</strong> {{ cliente.cnpj }}</li>
+    {% endif %}
+  </ul>
+
+  <a href="{% url 'cliente_update' cliente.pk %}" class="btn btn-warning">Editar</a>
+  <a href="{% url 'cliente_delete' cliente.pk %}" class="btn btn-danger ms-2">Excluir</a>
+  <a href="{% url 'cliente_list' %}" class="btn btn-secondary ms-2">Voltar à lista</a>
+</div>
+{% endblock %}

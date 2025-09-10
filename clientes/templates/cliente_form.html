@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if object %}Editar Cliente{% else %}Novo Cliente{% endif %}
+{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">{% if object %}Editar Cliente{% else %}Novo Cliente{% endif %}</h1>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+
+  <div class="mb-3">
+    <label class="form-label">{{ form.nome.label }}</label>
+    {{ form.nome }}
+    {{ form.nome.errors }}
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">{{ form.email.label }}</label>
+    {{ form.email }}
+    {{ form.email.errors }}
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">{{ form.telefone.label }}</label>
+    {{ form.telefone }}
+    {{ form.telefone.errors }}
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">{{ form.tipo.label }}</label>
+    {{ form.tipo }}
+    {{ form.tipo.errors }}
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">{{ form.cpf.label }}</label>
+    {{ form.cpf }}
+    {{ form.cpf.errors }}
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">{{ form.data_nascimento.label }}</label>
+    {{ form.data_nascimento }}
+    {{ form.data_nascimento.errors }}
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">{{ form.cnpj.label }}</label>
+    {{ form.cnpj }}
+    {{ form.cnpj.errors }}
+  </div>
+
+  <button type="submit" class="btn btn-primary">Salvar</button>
+  <a href="{% url 'cliente_list' %}" class="btn btn-secondary ms-2">Voltar à lista</a>
+</form>
+{% endblock %}

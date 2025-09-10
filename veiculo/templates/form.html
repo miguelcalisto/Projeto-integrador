@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4"  style="background-color: #54ff63;">
+
+    {% if view.object.pk %}
+    <h2>Editar Veículo</h2>
+    {% else %}
+    <h2>Novo Veículo</h2>
+    {% endif %}
+
+    <form method="post">
+
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-primary">
+            {% if view.object.pk %}
+                Salvar Alterações
+
+                {% else %}
+                Cadastrar
+            {% endif %}
+        </button>
+
+<a href="{% url 'lista_veiculos' %}" class="btn btn-primary ">Listar todos</a>
+    </form>
+</div>
+{% endblock %}
