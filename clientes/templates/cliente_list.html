@@ -22,38 +22,22 @@
       </thead>
       <tbody>
         {% for cliente in object_list %}
-        <tr>
-          <td>{{ cliente }}</td>
-          <td>
-            {% if cliente.pessoa_fisica %}
-              {{ cliente.pessoa_fisica.email }}
-            {% elif cliente.pessoa_juridica %}
-              {{ cliente.pessoa_juridica.email }}
-            {% else %}
-              -
-            {% endif %}
-          </td>
-          <td>
-            {% if cliente.pessoa_fisica %}
-              {{ cliente.pessoa_fisica.telefone }}
-            {% elif cliente.pessoa_juridica %}
-              {{ cliente.pessoa_juridica.telefone }}
-            {% else %}
-              -
-            {% endif %}
-          </td>
-          <td>{{ cliente.get_tipo_display }}</td>
-          <td>
-            <a href="{% url 'cliente_detail' cliente.pk %}" class="btn btn-info btn-sm">Ver</a>
-            <a href="{% url 'cliente_update' cliente.pk %}" class="btn btn-warning btn-sm">Editar</a>
-            <a href="{% url 'cliente_delete' cliente.pk %}" class="btn btn-danger btn-sm">Excluir</a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="5" class="text-center">Nenhum cliente cadastrado.</td>
-        </tr>
-        {% endfor %}
+  <tr>
+    <td>{{ cliente }}</td>
+    <td>{{ cliente.email }}</td>
+    <td>{{ cliente.telefone }}</td>
+    <td>{{ cliente.get_tipo_display }}</td>
+    <td>
+      <a href="{% url 'cliente_detail' cliente.pk %}" class="btn btn-info btn-sm">Ver</a>
+      <a href="{% url 'cliente_update' cliente.pk %}" class="btn btn-warning btn-sm">Editar</a>
+      <a href="{% url 'cliente_delete' cliente.pk %}" class="btn btn-danger btn-sm">Excluir</a>
+    </td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="5" class="text-center">Nenhum cliente cadastrado.</td>
+  </tr>
+  {% endfor %}
       </tbody>
     </table>
   </div>

@@ -1,6 +1,7 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Veiculo
+from .forms import VeiculoForm  # importe seu form personalizado
 
 class VeiculoListView(ListView):
     model = Veiculo
@@ -9,13 +10,13 @@ class VeiculoListView(ListView):
 
 class VeiculoCreateView(CreateView):
     model = Veiculo
-    fields = ['placa', 'modelo', 'cor' , 'dono']
+    form_class = VeiculoForm  # usa o form personalizado
     template_name = 'form.html'
     success_url = reverse_lazy('lista_veiculos')
 
 class VeiculoUpdateView(UpdateView):
     model = Veiculo
-    fields = ['placa', 'modelo', 'cor']
+    form_class = VeiculoForm  # também aqui
     template_name = 'form.html'
     success_url = reverse_lazy('lista_veiculos')
 

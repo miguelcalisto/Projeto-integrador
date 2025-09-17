@@ -13,5 +13,8 @@ class ClienteForm(forms.ModelForm):
             'tipo': forms.Select(attrs={'class': 'form-select'}),
             'cpf': forms.TextInput(attrs={'class': 'form-control'}),
             'data_nascimento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'cnpj': forms.TextInput(attrs={'class': 'form-control'}),
+            'cnpj': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Apenas para PJ'
+            }),
         }
