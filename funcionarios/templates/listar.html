@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Funcionários{% endblock %}
+
+{% block content %}
+  <h2 class="text-center">Lista de Funcionários</h2>
+  <a href="{% url 'funcionarios:criar-funcionario' %}" class="btn btn-success mb-3">Novo Funcionário</a>
+
+  <table class="table table-striped">
+      <thead>
+          <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Ações</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for funcionario in funcionarios %}
+          <tr>
+              <td>{{ funcionario.id }}</td>
+              <td>{{ funcionario.nome }}</td>
+              <td>
+                  <a href="{% url 'funcionarios:detalhe-funcionario' funcionario.pk %}" class="btn btn-info btn-sm">Detalhes</a>
+                  <a href="{% url 'funcionarios:editar-funcionario' funcionario.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                  <a href="{% url 'funcionarios:deletar-funcionario' funcionario.pk %}" class="btn btn-danger btn-sm">Deletar</a>
+              </td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+{% endblock %}

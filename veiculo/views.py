@@ -9,7 +9,7 @@ class VeiculoListView(ListView):
 
 class VeiculoCreateView(CreateView):
     model = Veiculo
-    fields = ['placa', 'modelo', 'cor']
+    fields = ['placa', 'modelo', 'cor' , 'dono']
     template_name = 'form.html'
     success_url = reverse_lazy('lista_veiculos')
 

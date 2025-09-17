@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalhes do Funcionário{% endblock %}
+
+{% block content %}
+  <h2 class="text-center">Detalhes do Funcionário</h2>
+
+  {% if funcionario.foto %}
+    <img src="{{ funcionario.foto.url }}" alt="Foto do Funcionário" class="img-thumbnail mb-3" style="max-width: 200px;">
+  {% else %}
+    <p><em>Foto não disponível.</em></p>
+  {% endif %}
+
+  <p><strong>Nome:</strong> {{ funcionario.nome }}</p>
+  <p><strong>Email:</strong> {{ funcionario.email }}</p>
+
+  <a href="{% url 'funcionarios:editar-funcionario' funcionario.pk %}" class="btn btn-warning">Editar</a>
+  <a href="{% url 'funcionarios:deletar-funcionario' funcionario.pk %}" class="btn btn-danger">Deletar</a>
+  <a href="{% url 'funcionarios:lista-funcionarios' %}" class="btn btn-secondary">Voltar</a>
+{% endblock %}

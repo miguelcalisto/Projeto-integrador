@@ -16,12 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings              # Para acessar MEDIA_URL e MEDIA_ROOT
+from django.conf.urls.static import static    # Para servir arquivos de mídia no dev
+
 from veiculo import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls' )),
     path('veiculos/', include('veiculo.urls')),
-    path('clientes/', include('clientes.urls')),  # <== aqui
+    path('clientes/', include('clientes.urls')),
+    path('funcionarios/', include('funcionarios.urls')),
 
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+

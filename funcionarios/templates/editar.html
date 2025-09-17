@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Funcionário{% endblock %}
+
+{% block content %}
+  <h2 class="text-center">Editar Funcionário</h2>
+  <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+  </form>
+{% endblock %}
