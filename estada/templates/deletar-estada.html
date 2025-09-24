@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir Estada{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Excluir Estada</h1>
+
+<p>Tem certeza que deseja excluir a estada do veículo <strong>{{ object.veiculo }}</strong> na vaga <strong>{{ object.numero_vaga }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Confirmar</button>
+    <a href="{% url 'estada:detalhe-estada' object.pk %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}

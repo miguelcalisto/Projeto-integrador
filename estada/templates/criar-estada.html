@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Criar Estada{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Criar Estada</h1>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    
+    {% for field in form %}
+        <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+            <div class="form-text">{{ field.help_text }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a href="{% url 'estada:lista-estadas' %}" class="btn btn-danger me-3 ">Cancelar</a>
+    <a href="{% url 'estada:lista-estadas' %}" class="btn btn-secondary  ">Listar Estadas</a>
+
+</form>
+
+{% endblock %}

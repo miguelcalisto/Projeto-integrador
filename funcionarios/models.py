@@ -20,4 +20,4 @@ class Funcionario(Pessoa):
 
 
     def __str__(self):
-        return f'{self.nome} - {self.cargo}'
+        return f'{self.nome} '

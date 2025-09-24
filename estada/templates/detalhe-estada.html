@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalhes da Estada{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Detalhes da Estada</h1>
+
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th>Veículo</th>
+            <td>{{ estada.veiculo }}</td>
+        </tr>
+        <tr>
+            <th>Vaga</th>
+            <td>{{ estada.numero_vaga }}</td>
+        </tr>
+        <tr>
+            <th>Status da Vaga</th>
+            <td>
+              {% if estada.status_vaga %}
+                <span class="badge bg-success">Disponível</span>
+              {% else %}
+                <span class="badge bg-danger">Ocupada</span>
+              {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Data Entrada</th>
+            <td>{{ estada.data_entrada|date:"d/m/Y H:i" }}</td>
+        </tr>
+        <tr>
+            <th>Data Saída</th>
+            <td>{{ estada.data_saida|default:"-"|date:"d/m/Y H:i" }}</td>
+        </tr>
+        <tr>
+            <th>Tempo Total</th>
+            <td>{{ estada.tempo_total|default:"-" }}</td>
+        </tr>
+        <tr>
+            <th>Valor do Pagamento</th>
+            <td>R$ {{ estada.valor_pagamento|default:"-" }}</td>
+        </tr>
+        <tr>
+            <th>Modalidade do Pagamento</th>
+            <td>{{ estada.get_modalidade_pagamento_display|default:"-" }}</td>
+        </tr>
+        <tr>
+            <th>Funcionário Responsável</th>
+            <td>{{ estada.funcionario_responsavel|default:"-" }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<a href="{% url 'estada:editar-estada' estada.pk %}" class="btn btn-warning">Editar</a>
+<a href="{% url 'estada:deletar-estada' estada.pk %}" class="btn btn-danger">Excluir</a>
+<a href="{% url 'estada:lista-estadas' %}" class="btn btn-secondary">Voltar</a>
+
+{% endblock %}

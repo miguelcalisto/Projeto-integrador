@@ -27,7 +27,10 @@ urlpatterns = [
     path('veiculos/', include('veiculo.urls')),
     path('clientes/', include('clientes.urls')),
     path('funcionarios/', include('funcionarios.urls')),
+    path('estada/', include('estada.urls', namespace='estada')),
+
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 
