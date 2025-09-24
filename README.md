@@ -1,21 +1,21 @@
 # 🤖 Projeto Integrador
 
-Trabalho com [Django](https://www.djangoproject.com/) 🕸️
+Trabalho com [Django](https://www.djangoproject.com/) 🐍
 
 ---
 
 ## 🚀 Como Usar
 
-1. **Crie e ative o [ambiente virtual](https://docs.python.org/pt-br/3/library/venv.html)** 🐍
+1. **Crie e ative o [ambiente virtual](https://docs.python.org/pt-br/3/library/venv.html)** 
 
-💻 **Linux/WSL**:
+🐧  **Linux/WSL**:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-🪟 **Windows**:
+🖥️ **Windows**:
 
 ```bash
 python -m venv .venv
