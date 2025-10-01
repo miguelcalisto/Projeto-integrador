@@ -22,16 +22,36 @@
         {% for estada in estadas %}
             <tr>
                 <td>{{ estada.veiculo }}</td>
-                <td>{{ estada.numero_vaga }}</td>
+
                 <td>
-                  {% if estada.status_vaga %}
-                    <span class="badge bg-success">Disponível</span>
-                  {% else %}
-                    <span class="badge bg-danger">Ocupada</span>
-                  {% endif %}
+                    {% if estada.vaga %}
+                        {{ estada.vaga.numero }}
+                    {% else %}
+                        <span class="text-danger">Sem vaga</span>
+                    {% endif %}
                 </td>
+
+                <td>
+                    {% if estada.vaga %}
+                        {% if estada.vaga.status == 'livre' %}
+                            <span class="badge bg-success">{{ estada.vaga.get_status_display }}</span>
+                        {% else %}
+                            <span class="badge bg-danger">{{ estada.vaga.get_status_display }}</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="badge bg-secondary">Sem vaga</span>
+                    {% endif %}
+                </td>
+
                 <td>{{ estada.data_entrada|date:"d/m/Y H:i" }}</td>
-                <td>{{ estada.data_saida|default:"-"|date:"d/m/Y H:i" }}</td>
+                <td>
+                    {% if estada.data_saida %}
+                        {{ estada.data_saida|date:"d/m/Y H:i" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
                 <td>
                     <a href="{% url 'estada:detalhe-estada' estada.pk %}" class="btn btn-sm btn-info">Ver</a>
                     <a href="{% url 'estada:editar-estada' estada.pk %}" class="btn btn-sm btn-warning">Editar</a>
