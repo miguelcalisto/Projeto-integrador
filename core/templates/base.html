@@ -3,22 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Estacionamento{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<!--    icon do carro no mavbar-->
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
+    <style>
+        /* Estilização extra opcional para o botão de tema */
+        #toggleThemeBtn {
+            cursor: pointer;
+        }
+    </style>
 </head>
-<body  >
-    {% block navbar %}
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
 
+<!-- Define o tema inicialmente com JavaScript mais abaixo -->
+<body data-bs-theme="light">
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-      <a class="navbar-brand d-flex align-items-center" href="#">
-    <i class="bi bi-car-front-fill me-2" style="font-size: 1.5rem;"></i>
-    Menu
-    <span style="border-left: 3px solid black; height: 24px; margin-left: 10px;"></span>
-</a>
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <i class="bi bi-car-front-fill me-2" style="font-size: 1.5rem;"></i>
+            Menu
+            <span style="border-left: 3px solid black; height: 24px; margin-left: 10px;"></span>
+        </a>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">
@@ -27,65 +38,89 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
                 <li class="nav-item">
                     <a class="nav-link btn btn-outline-success text-black mx-1" href="{% url 'index' %}">Home</a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link btn btn-outline-success text-black mx-1" href="{% url 'cliente_list' %}">Clientes</a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link btn btn-outline-success text-black mx-1" href="{% url 'lista_veiculos' %}">Veículos</a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link btn btn-outline-success text-black mx-1" href="{% url 'funcionarios:lista-funcionarios' %}">Funcionários</a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link btn btn-outline-success text-black mx-1" href="{% url 'estada:lista-estadas' %}">Estadas</a>
                 </li>
-
-                 <li class="nav-item">
+                <li class="nav-item">
                     <a class="nav-link btn btn-outline-success text-black mx-1" href="{% url 'vaga:lista-vagas' %}">Vagas</a>
                 </li>
-
             </ul>
 
-             <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
+            <!-- Botão para alternar tema -->
+            <button id="toggleThemeBtn" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-moon-stars-fill"></i>
+                Tema Escuro
+            </button>
 
         </div>
     </div>
 </nav>
+{% endblock %}
 
-
-      {% endblock %}
-
-
-
-    <div class="container mt-5">
-        {% block content %}
-
-        {% endblock %}
-    </div>
-
+<div class="container mt-5">
+    {% block content %}
+    {% endblock %}
+</div>
 
 {% block footer %}
 <footer class="bg-dark text-center text-lg-start mt-5 text-white">
-  <div class="container p-4">
-
-
-  <div class="text-center p-3 bg-dark text-white">
-    © {{ ano_atual }} Estacionamento
-  </div>
+    <div class="container p-4">
+        <!-- Conteúdo do rodapé, se necessário -->
+    </div>
+    <div class="text-center p-3 bg-dark text-white">
+        © {{ ano_atual }} Estacionamento
+    </div>
 </footer>
 {% endblock %}
 
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script para alternar tema -->
+<script>
+    const themeToggleBtn = document.getElementById('toggleThemeBtn');
+    const body = document.body;
+
+    // Função para alternar o tema
+    function toggleTheme() {
+        let currentTheme = body.getAttribute('data-bs-theme');
+        let newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        body.setAttribute('data-bs-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateButtonText(newTheme);
+    }
+
+    // Atualiza texto e ícone do botão
+    function updateButtonText(theme) {
+        if (theme === 'dark') {
+            themeToggleBtn.innerHTML = '<i class="bi bi-sun-fill"></i> Tema Claro';
+        } else {
+            themeToggleBtn.innerHTML = '<i class="bi bi-moon-stars-fill"></i> Tema Escuro';
+        }
+    }
+
+    // Evento de clique
+    themeToggleBtn.addEventListener('click', toggleTheme);
+
+    // Ao carregar, aplica o tema salvo
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-bs-theme', savedTheme);
+        updateButtonText(savedTheme);
+    });
+</script>
 
 </body>
 </html>
