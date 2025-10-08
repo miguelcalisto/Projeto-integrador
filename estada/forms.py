@@ -14,11 +14,29 @@ class EstadaForm(forms.ModelForm):
     #     self.fields['vaga'].queryset = Vaga.objects.filter(status='livre')
 
 
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     vaga = cleaned_data.get('vaga')
+    #
+    #     if vaga and vaga.status == 'ocupada':
+    #         raise forms.ValidationError(f"A vaga {vaga.numero} já está ocupada.")
+    #
+    #     return cleaned_data
+
+    # problema da vaga ocupada
     def clean(self):
         cleaned_data = super().clean()
         vaga = cleaned_data.get('vaga')
 
+        # pega a instância da estada que está sendo editada (ou None se for criação)
+        estada_atual = self.instance
+
         if vaga and vaga.status == 'ocupada':
-            raise forms.ValidationError(f"A vaga {vaga.numero} já está ocupada.")
+            # Se for uma criação (sem pk) ou a vaga for diferente da atual da estada, dá erro
+            if not estada_atual.pk or estada_atual.vaga != vaga:
+                raise forms.ValidationError(f"A vaga {vaga.numero} já está ocupada.")
 
         return cleaned_data
+
+
+

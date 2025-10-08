@@ -4,7 +4,7 @@ from .views import (
     EstadaDetailView,
     EstadaCreateView,
     EstadaUpdateView,
-    EstadaDeleteView,
+    EstadaDeleteView, confirmar_pagamento,
 )
 
 app_name = 'estada'  # Namespace para o app
@@ -15,4 +15,5 @@ urlpatterns = [
     path('criar/', EstadaCreateView.as_view(), name='criar-estada'),
     path('editar/<int:pk>/', EstadaUpdateView.as_view(), name='editar-estada'),
     path('deletar/<int:pk>/', EstadaDeleteView.as_view(), name='deletar-estada'),
+    path('<int:pk>/confirmar-pagamento/', confirmar_pagamento, name='confirmar-pagamento'),
 ]

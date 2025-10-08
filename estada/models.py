@@ -39,9 +39,11 @@ class Estada(models.Model):
 
     # Campos calculados
     tempo_total = models.DurationField(null=True, blank=True)
+    pago = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Estada do veículo {self.veiculo} na vaga {self.vaga}"
+        status_pagamento = "Pago" if self.pago else "Pendente"
+        return f"Estada do veículo {self.veiculo} na vaga {self.vaga} - Situação: {status_pagamento}"
 
 
     # para marcar como livre vai da erro no update de estadaa

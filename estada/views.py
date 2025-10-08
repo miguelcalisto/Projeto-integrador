@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Estada
@@ -75,3 +76,9 @@ class EstadaDeleteView(LoginRequiredMixin,DeleteView):
 
 
 
+@login_required(login_url='login')
+def confirmar_pagamento(request, pk):
+    estada = get_object_or_404(Estada, pk=pk)
+    estada.pago = True
+    estada.save()
+    return redirect('estada:lista-estadas')  # Ou ajuste o nome se for diferente
