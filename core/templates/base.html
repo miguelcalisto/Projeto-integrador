@@ -56,6 +56,9 @@
                 <li class="nav-item">
                     <a class="nav-link btn btn-outline-success text-black mx-1" href="{% url 'vaga:lista-vagas' %}">Vagas</a>
                 </li>
+
+
+
             </ul>
 
             <!-- Botão para alternar tema -->
@@ -63,6 +66,10 @@
                 <i class="bi bi-moon-stars-fill"></i>
                 Tema Escuro
             </button>
+             <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger">Sair</button>
+             </form>
 
         </div>
     </div>

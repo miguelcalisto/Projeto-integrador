@@ -1,21 +1,24 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Estada
 from .forms import EstadaForm  # Você precisará criar esse form
 
-class EstadaListView(ListView):
+
+class EstadaListView(LoginRequiredMixin,ListView):
     model = Estada
     template_name = 'listar-estada.html'       # Ajuste o caminho conforme seu template
     context_object_name = 'estadas'
 
 
-class EstadaDetailView(DetailView):
+class EstadaDetailView(LoginRequiredMixin,DetailView):
     model = Estada
     template_name = 'detalhe-estada.html'
     context_object_name = 'estada'
 
 
-class EstadaCreateView(CreateView):
+class EstadaCreateView(LoginRequiredMixin,CreateView):
     model = Estada
     form_class = EstadaForm
     template_name = 'criar-estada.html'
@@ -33,7 +36,7 @@ class EstadaCreateView(CreateView):
         return response
 
 
-class EstadaUpdateView(UpdateView):
+class EstadaUpdateView(LoginRequiredMixin,UpdateView):
     model = Estada
     form_class = EstadaForm
     template_name = 'editar-estada.html'
@@ -52,7 +55,7 @@ class EstadaUpdateView(UpdateView):
     #     return response
 
 
-class EstadaDeleteView(DeleteView):
+class EstadaDeleteView(LoginRequiredMixin,DeleteView):
     model = Estada
     template_name = 'deletar-estada.html'
     success_url = reverse_lazy('estada:lista-estadas')
