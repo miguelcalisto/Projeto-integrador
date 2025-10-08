@@ -1,0 +1,20 @@
+Pagamento confirmado com sucesso!
+
+Estada ID: {{ estada.pk }}
+Data de entrada: {{ estada.data_entrada }}
+Data de saída: {{ estada.data_saida|default:"-" }}
+Valor pago: R$ {{ estada.valor_pagamento|default:"0.00" }}
+Forma de pagamento: {{ estada.get_modalidade_pagamento_display }}
+
+Veículo: {{ estada.veiculo.modelo }} - {{ estada.veiculo.placa }}
+Cor: {{ estada.veiculo.cor }}
+
+Cliente: {{ estada.veiculo.dono.nome }}
+CPF/CNPJ: {{ estada.veiculo.dono.cpf|default:estada.veiculo.dono.cnpj }}
+Email: {{ estada.veiculo.dono.email }}
+Telefone: {{ estada.veiculo.dono.telefone }}
+
+Vaga: {{ estada.vaga.numero }} - {{ estada.vaga.get_status_display }}
+Funcionário responsável: {{ estada.funcionario_responsavel.nome }}
+
+Obrigado por utilizar nosso estacionamento!

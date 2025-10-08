@@ -57,13 +57,13 @@
                     <a href="{% url 'estada:editar-estada' estada.pk %}" class="btn btn-sm btn-warning">Editar</a>
                     <a href="{% url 'estada:deletar-estada' estada.pk %}" class="btn btn-sm btn-danger">Excluir</a>
                     <a href="{% url 'estada:confirmar-pagamento' estada.pk %}"
-                        class="btn btn-sm btn-success"
-                        {% if estada.pago %}disabled{% endif %}>
-                        {% if estada.pago %}
-                        Pago
-                        {% else %}
-                        Confirmar Pagamento
-                        {% endif %}
+                    class="btn btn-sm btn-success"
+                    {% if estada.pago %}disabled{% endif %}>
+                    {% if estada.pago %}
+                    Pago
+                    {% else %}
+                    Confirmar Pagamento
+                    {% endif %}
                     </a>
 
                 </td>

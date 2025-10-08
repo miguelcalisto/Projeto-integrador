@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.shortcuts import get_object_or_404, redirect
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Estada
@@ -44,6 +45,30 @@ class EstadaUpdateView(LoginRequiredMixin,UpdateView):
     form_class = EstadaForm
     template_name = 'editar-estada.html'
     success_url = reverse_lazy('estada:lista-estadas')
+
+    def form_valid(self, form):
+        # Salva o form e obtém o objeto atualizado
+        response = super().form_valid(form)
+
+        estada = self.object  # objeto atualizado
+
+        # verifica se o pagamento foi confirmado (campo pago passou de False para True)
+        if not self.object.pago and estada.pago:
+            # código para enviar email
+
+            subject = f'Pagamento confirmado para Estada {estada.pk}'
+            from_email = settings.DEFAULT_FROM_EMAIL
+            to = ['EMAILl@gmail.com']
+
+            context = {'estada': estada}
+            html_content = render_to_string('emails/pagamento_confirmado.html', context)
+            text_content = render_to_string('emails/pagamento_confirmado.txt', context)
+
+            email = EmailMultiAlternatives(subject, text_content, from_email, to)
+            email.attach_alternative(html_content, "text/html")
+            email.send()
+
+        return response
 
 
 # altera para livre quando a vaga eh att
@@ -91,17 +116,26 @@ def confirmar_pagamento(request, pk):
     estada.pago = True
     estada.save()
 
-    # Dados do email
-    assunto = f'Pagamento confirmado para Estada {estada.pk}'
-    mensagem = (
-        f'O pagamento da estada do veículo {estada.veiculo} na vaga {estada.vaga} '
-        f'foi confirmado com sucesso.\n\n'
-        f'Data Entrada: {estada.data_entrada}\n'
-        f'Data Saída: {estada.data_saida or "Não informada"}\n'
-        f'Status: {"Pago" if estada.pago else "Pendente"}'
-    )
-    destinatario = ['SEUEMAIL@gmail.com']  # Troque pelo email real que deve receber
+    subject = f'Pagamento confirmado para Estada {estada.pk}'
+    from_email = settings.DEFAULT_FROM_EMAIL
+    to = ['EMAIl@gmail.com']
 
-    send_mail(assunto, mensagem, None, destinatario)
+    # Contexto para o template HTML
+    context = {
+        'estada': estada,
+        'veiculo': estada.veiculo,
+        'vaga': estada.vaga,
+        'cliente': estada.veiculo.cliente if hasattr(estada.veiculo, 'cliente') else None,
+        'tempo_total': estada.data_saida - estada.data_entrada if estada.data_saida else None,
+    }
+
+    # Carrega o template HTML e o texto simples
+    html_content = render_to_string('emails/pagamento_confirmado.html', context)
+    text_content = render_to_string('emails/pagamento_confirmado.txt', context)
+
+    # Cria o email multi formato
+    email = EmailMultiAlternatives(subject, text_content, from_email, to)
+    email.attach_alternative(html_content, "text/html")
+    email.send()
 
     return redirect('estada:lista-estadas')

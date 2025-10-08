@@ -6,12 +6,26 @@
 {% block content %}
 <h1 class="mb-4">Editar Estada</h1>
 
+<!--<form method="post" novalidate>-->
+<!--    {% csrf_token %}-->
+<!--    {{ form|crispy }}-->
+
+<!--    <button type="submit" class="btn btn-primary">Atualizar</button>-->
+<!--    <a href="{% url 'estada:detalhe-estada' object.pk %}" class="btn btn-secondary">Cancelar</a>-->
+<!--</form>-->
+
 <form method="post" novalidate>
     {% csrf_token %}
     {{ form|crispy }}
-    
+
     <button type="submit" class="btn btn-primary">Atualizar</button>
+    <a href="{% url 'estada:confirmar-pagamento' object.pk %}"
+       class="btn btn-success"
+       {% if object.pago %}disabled{% endif %}>
+       {% if object.pago %}Pago{% else %}Confirmar Pagamento{% endif %}
+    </a>
     <a href="{% url 'estada:detalhe-estada' object.pk %}" class="btn btn-secondary">Cancelar</a>
 </form>
+
 
 {% endblock %}

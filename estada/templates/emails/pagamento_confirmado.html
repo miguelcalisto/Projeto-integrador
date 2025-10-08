@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmação de Pagamento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        h2 {
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+        }
+        td {
+            padding: 8px;
+        }
+        th {
+            text-align: left;
+            padding: 8px;
+            background-color: #eeeeee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>✅ Pagamento Confirmado</h2>
+
+        <p>O pagamento da estada foi confirmado com sucesso!</p>
+
+        <h3>🔖 Dados da Estada</h3>
+        <table>
+            <tr><th>Data de Entrada:</th><td>{{ estada.data_entrada }}</td></tr>
+            <tr><th>Data de Saída:</th><td>{{ estada.data_saida|default:"Não registrada" }}</td></tr>
+            <tr><th>Tempo Total:</th><td>{{ estada.tempo_total|default:"-" }}</td></tr>
+            <tr><th>Valor:</th><td>R$ {{ estada.valor_pagamento|default:"0.00" }}</td></tr>
+            <tr><th>Forma de Pagamento:</th><td>{{ estada.get_modalidade_pagamento_display }}</td></tr>
+            <tr>
+                <th>Status:</th>
+                <td>
+                {% if estada.pago %}
+                  Pago
+                {% else %}
+                  Pendente
+                {% endif %}
+                </td>
+                </tr>
+
+        </table>
+
+        <h3>🚗 Veículo</h3>
+        <table>
+            <tr><th>Modelo:</th><td>{{ estada.veiculo.modelo }}</td></tr>
+            <tr><th>Placa:</th><td>{{ estada.veiculo.placa }}</td></tr>
+            <tr><th>Cor:</th><td>{{ estada.veiculo.cor }}</td></tr>
+        </table>
+
+        <h3>👤 Cliente</h3>
+        <table>
+            <tr><th>Nome:</th><td>{{ estada.veiculo.dono.nome }}</td></tr>
+            <tr><th>Tipo:</th><td>
+                {% if estada.veiculo.dono.tipo == 'F' %}
+                    Pessoa Física (CPF: {{ estada.veiculo.dono.cpf }})
+                {% else %}
+                    Pessoa Jurídica (CNPJ: {{ estada.veiculo.dono.cnpj }})
+                {% endif %}
+            </td></tr>
+            <tr><th>Email:</th><td>{{ estada.veiculo.dono.email }}</td></tr>
+            <tr><th>Telefone:</th><td>{{ estada.veiculo.dono.telefone }}</td></tr>
+        </table>
+
+        <h3>📍 Vaga</h3>
+        <table>
+            <tr><th>Número:</th><td>{{ estada.vaga.numero }}</td></tr>
+            <tr><th>Status Atual:</th><td>{{ estada.vaga.get_status_display }}</td></tr>
+        </table>
+
+        <h3>👷 Funcionário</h3>
+        <table>
+            <tr><th>Nome:</th><td>{{ estada.funcionario_responsavel.nome }}</td></tr>
+        </table>
+
+        <p style="margin-top: 30px;">Obrigado por utilizar nosso estacionamento.</p>
+    </div>
+</body>
+</html>
