@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Estada
 from .forms import EstadaForm  # Você precisará criar esse form
 
+from django.conf import settings
 
 class EstadaListView(LoginRequiredMixin,ListView):
     model = Estada
@@ -76,9 +78,30 @@ class EstadaDeleteView(LoginRequiredMixin,DeleteView):
 
 
 
+# @login_required(login_url='login')
+# def confirmar_pagamento(request, pk):
+#     estada = get_object_or_404(Estada, pk=pk)
+#     estada.pago = True
+#     estada.save()
+#     return redirect('estada:lista-estadas')  # Ou ajuste o nome se for diferente
+
 @login_required(login_url='login')
 def confirmar_pagamento(request, pk):
     estada = get_object_or_404(Estada, pk=pk)
     estada.pago = True
     estada.save()
-    return redirect('estada:lista-estadas')  # Ou ajuste o nome se for diferente
+
+    # Dados do email
+    assunto = f'Pagamento confirmado para Estada {estada.pk}'
+    mensagem = (
+        f'O pagamento da estada do veículo {estada.veiculo} na vaga {estada.vaga} '
+        f'foi confirmado com sucesso.\n\n'
+        f'Data Entrada: {estada.data_entrada}\n'
+        f'Data Saída: {estada.data_saida or "Não informada"}\n'
+        f'Status: {"Pago" if estada.pago else "Pendente"}'
+    )
+    destinatario = ['SEUEMAIL@gmail.com']  # Troque pelo email real que deve receber
+
+    send_mail(assunto, mensagem, None, destinatario)
+
+    return redirect('estada:lista-estadas')
