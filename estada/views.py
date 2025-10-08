@@ -22,53 +22,90 @@ class EstadaDetailView(LoginRequiredMixin,DetailView):
     context_object_name = 'estada'
 
 
-class EstadaCreateView(LoginRequiredMixin,CreateView):
+class EstadaCreateView(LoginRequiredMixin, CreateView):
     model = Estada
     form_class = EstadaForm
     template_name = 'criar-estada.html'
-    success_url = reverse_lazy('estada:lista-estadas')  # Ajuste o namespace e nome da url
+    success_url = reverse_lazy('estada:lista-estadas')
 
     def form_valid(self, form):
         response = super().form_valid(form)
 
-        # Depois de salvar a Estada, atualize o status da vaga vinculada
-        vaga = self.object.vaga
+        estada = self.object  # já salvo
+
+        # Atualiza a vaga para "ocupada", se necessário
+        vaga = estada.vaga
         if vaga:
-            vaga.status = 'ocupada'  # Marca como ocupada ao criar estada
+            vaga.status = 'ocupada'
             vaga.save()
+
+        # Se já está pago, envia o e-mail
+        if estada.pago:
+            self.enviar_email_pagamento(estada)
 
         return response
 
+    def enviar_email_pagamento(self, estada):
+        subject = f'Pagamento confirmado para Estada {estada.pk}'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        to = ['EMAIL']
 
-class EstadaUpdateView(LoginRequiredMixin,UpdateView):
+        context = {
+            'estada': estada,
+            'veiculo': estada.veiculo,
+            'vaga': estada.vaga,
+            'cliente': estada.veiculo.dono if estada.veiculo.dono else None,
+            'tempo_total': estada.tempo_total,
+        }
+
+        html_content = render_to_string('emails/pagamento_confirmado.html', context)
+        text_content = render_to_string('emails/pagamento_confirmado.txt', context)
+
+        email = EmailMultiAlternatives(subject, text_content, from_email, to)
+        email.attach_alternative(html_content, "text/html")
+        email.send()
+
+
+
+class EstadaUpdateView(LoginRequiredMixin, UpdateView):
     model = Estada
     form_class = EstadaForm
     template_name = 'editar-estada.html'
     success_url = reverse_lazy('estada:lista-estadas')
 
     def form_valid(self, form):
-        # Salva o form e obtém o objeto atualizado
+        # Pega o estado anterior do objeto
+        estada_antiga = self.get_object()
+
         response = super().form_valid(form)
 
         estada = self.object  # objeto atualizado
 
-        # verifica se o pagamento foi confirmado (campo pago passou de False para True)
-        if not self.object.pago and estada.pago:
-            # código para enviar email
-
-            subject = f'Pagamento confirmado para Estada {estada.pk}'
-            from_email = settings.DEFAULT_FROM_EMAIL
-            to = ['EMAILl@gmail.com']
-
-            context = {'estada': estada}
-            html_content = render_to_string('emails/pagamento_confirmado.html', context)
-            text_content = render_to_string('emails/pagamento_confirmado.txt', context)
-
-            email = EmailMultiAlternatives(subject, text_content, from_email, to)
-            email.attach_alternative(html_content, "text/html")
-            email.send()
+        # Verifica se o campo 'pago' mudou de False para True
+        if not estada_antiga.pago and estada.pago:
+            self.enviar_email_pagamento(estada)
 
         return response
+
+    def enviar_email_pagamento(self, estada):
+        subject = f'Pagamento confirmado para Estada {estada.pk}'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        to = ['EMAIL']
+
+        context = {
+            'estada': estada,
+            'veiculo': estada.veiculo,
+            'vaga': estada.vaga,
+            'cliente': estada.veiculo.dono if estada.veiculo.dono else None,
+            'tempo_total': estada.tempo_total,
+        }
+
+        html_content = render_to_string('emails/pagamento_confirmado.html', context)
+        text_content = render_to_string('emails/pagamento_confirmado.txt', context)
+
+        email = EmailMultiAlternatives(subject, text_content, from_email, to)
+        email.attach_alternative(html_content, "text/html")
+        email.send()
 
 
 # altera para livre quando a vaga eh att
@@ -118,7 +155,7 @@ def confirmar_pagamento(request, pk):
 
     subject = f'Pagamento confirmado para Estada {estada.pk}'
     from_email = settings.DEFAULT_FROM_EMAIL
-    to = ['EMAIl@gmail.com']
+    to = ['EMAIL']
 
     # Contexto para o template HTML
     context = {
