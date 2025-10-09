@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
 {% block title %}Criar Estada{% endblock %}
 
@@ -7,32 +8,20 @@
 
 <form method="post" novalidate>
     {% csrf_token %}
-     {% if form.non_field_errors %}
-    <div class="text-danger mb-3">
+
+    {# Exibe erros que não são ligados a campos específicos #}
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger mb-3">
         {{ form.non_field_errors }}
     </div>
     {% endif %}
-    
-    {% for field in form %}
-        <div class="mb-3">
-            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-            {{ field }}
-            {% if field.help_text %}
-            <div class="form-text">{{ field.help_text }}</div>
-            {% endif %}
-            {% for error in field.errors %}
-            <div class="text-danger">{{ error }}</div>
-            {% endfor %}
-        </div>
-    {% endfor %}
-    
-    <button type="submit" class="btn btn-primary">Salvar</button>
-    <a href="{% url 'estada:lista-estadas' %}" class="btn btn-danger me-3 ">Cancelar</a>
-    <a href="{% url 'estada:lista-estadas' %}" class="btn btn-secondary  ">Listar Estadas</a>
 
+    {# Renderiza o formulário usando o crispy #}
+    {{ form|crispy }}
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a href="{% url 'estada:lista-estadas' %}" class="btn btn-danger me-3">Cancelar</a>
+    <a href="{% url 'estada:lista-estadas' %}" class="btn btn-secondary">Listar Estadas</a>
 </form>
 
 {% endblock %}
-
-
-

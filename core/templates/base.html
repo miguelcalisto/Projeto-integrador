@@ -15,10 +15,55 @@
         #toggleThemeBtn {
             cursor: pointer;
         }
+
+
+        /* Footer no modo dark */
+        body[data-bs-theme="dark"] footer {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+
+        body[data-bs-theme="dark"] footer * {
+            color: #000000 !important;
+            background-color: transparent !important;
+        }
+
+        /* Navbar no modo dark: fundo branco */
+        body[data-bs-theme="dark"] nav.navbar {
+            background-color: white !important;
+        }
+
+        /* Navbar brand (logo + texto): preto */
+        body[data-bs-theme="dark"] nav.navbar .navbar-brand,
+        body[data-bs-theme="dark"] nav.navbar .navbar-brand i {
+            color: black !important;
+        }
+
+        /* Navbar links no modo dark: texto preto escuro */
+        body[data-bs-theme="dark"] nav.navbar .nav-link.btn {
+            color: #212529 !important; /* preto escuro */
+            border-color: #212529 !important;
+        }
+
+        /* Hover dos links no modo dark */
+        body[data-bs-theme="dark"] nav.navbar .nav-link.btn:hover {
+            background-color: #e2e6ea !important;
+            color: #212529 !important;
+        }
+
+        /* Botão Tema Escuro/Claro no modo dark */
+        body[data-bs-theme="dark"] #toggleThemeBtn {
+            color: black !important;
+            border-color: black !important;
+        }
+
+        /* Navbar toggler icon (hamburger) no modo dark */
+        body[data-bs-theme="dark"] nav.navbar .navbar-toggler-icon {
+            filter: invert(0) !important; /* ícone escuro */
+        }
     </style>
 </head>
 
-<!-- Define o tema inicialmente com JavaScript mais abaixo -->
 <body data-bs-theme="light">
 
 {% block navbar %}
@@ -56,9 +101,6 @@
                 <li class="nav-item">
                     <a class="nav-link btn btn-outline-success text-black mx-1" href="{% url 'vaga:lista-vagas' %}">Vagas</a>
                 </li>
-
-
-
             </ul>
 
             <!-- Botão para alternar tema -->
@@ -66,11 +108,11 @@
                 <i class="bi bi-moon-stars-fill"></i>
                 Tema Escuro
             </button>
-             <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-danger">Sair</button>
-             </form>
 
+            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger">Sair</button>
+            </form>
         </div>
     </div>
 </nav>
@@ -100,7 +142,6 @@
     const themeToggleBtn = document.getElementById('toggleThemeBtn');
     const body = document.body;
 
-    // Função para alternar o tema
     function toggleTheme() {
         let currentTheme = body.getAttribute('data-bs-theme');
         let newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -109,7 +150,6 @@
         updateButtonText(newTheme);
     }
 
-    // Atualiza texto e ícone do botão
     function updateButtonText(theme) {
         if (theme === 'dark') {
             themeToggleBtn.innerHTML = '<i class="bi bi-sun-fill"></i> Tema Claro';
@@ -118,10 +158,8 @@
         }
     }
 
-    // Evento de clique
     themeToggleBtn.addEventListener('click', toggleTheme);
 
-    // Ao carregar, aplica o tema salvo
     document.addEventListener('DOMContentLoaded', () => {
         const savedTheme = localStorage.getItem('theme') || 'light';
         body.setAttribute('data-bs-theme', savedTheme);

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block title %}Editar Funcionário{% endblock %}
 
@@ -7,7 +8,9 @@
   <h2 class="text-center">Editar Funcionário</h2>
   <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
-      {{ form.as_p }}
+      {{ form|crispy }}
       <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+          <a href="{% url 'funcionarios:lista-funcionarios' %}" class="btn btn-danger me-2">Cancelar</a>
+
   </form>
 {% endblock %}
