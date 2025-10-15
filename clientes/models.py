@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -31,3 +32,9 @@ class Cliente(Pessoa):
         elif self.tipo == 'J':
             return f'{self.nome} (CNPJ: {self.cnpj})'
         return self.nome
+
+    def clean(self):
+        if self.tipo == 'F' and not self.cpf:
+            raise ValidationError("CPF é obrigatório para Pessoa Física.")
+        if self.tipo == 'J' and not self.cnpj:
+            raise ValidationError("CNPJ é obrigatório para Pessoa Jurídica.")

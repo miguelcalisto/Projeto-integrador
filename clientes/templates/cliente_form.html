@@ -35,7 +35,8 @@
     {{ form.tipo.errors }}
   </div>
 
-  <div class="mb-3">
+  <!-- Campo CPF (visível apenas para PF) -->
+  <div class="mb-3" id="cpf-field">
     <label class="form-label">{{ form.cpf.label }}</label>
     {{ form.cpf }}
     {{ form.cpf.errors }}
@@ -47,7 +48,8 @@
     {{ form.data_nascimento.errors }}
   </div>
 
-  <div class="mb-3">
+  <!-- Campo CNPJ (visível apenas para PJ) -->
+  <div class="mb-3" id="cnpj-field">
     <label class="form-label">{{ form.cnpj.label }}</label>
     {{ form.cnpj }}
     {{ form.cnpj.errors }}
@@ -56,4 +58,31 @@
   <button type="submit" class="btn btn-primary">Salvar</button>
   <a href="{% url 'cliente_list' %}" class="btn btn-secondary ms-2">Cancelar</a>
 </form>
+
+<!-- JavaScript para ocultar/mostrar campos -->
+<script>
+  function toggleCpfCnpj() {
+    const tipo = document.getElementById('id_tipo');
+    const cpfField = document.getElementById('cpf-field');
+    const cnpjField = document.getElementById('cnpj-field');
+
+    if (tipo.value === 'F') {
+      cpfField.style.display = 'block';
+      cnpjField.style.display = 'none';
+    } else if (tipo.value === 'J') {
+      cpfField.style.display = 'none';
+      cnpjField.style.display = 'block';
+    } else {
+      cpfField.style.display = 'none';
+      cnpjField.style.display = 'none';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    toggleCpfCnpj(); // Mostra/esconde ao carregar
+
+    // Aplica a função quando o campo muda
+    document.getElementById('id_tipo').addEventListener('change', toggleCpfCnpj);
+  });
+</script>
 {% endblock %}
