@@ -27,3 +27,11 @@ class Vaga(models.Model):
 
     def __str__(self):
         return f"Vaga {self.numero} - {self.get_status_display()}"
+
+
+# models.py
+class ConfiguracaoVaga(models.Model):
+    limite_maximo = models.PositiveIntegerField(default=10)
+
+    def __str__(self):
+        return f"Limite de vagas: {self.limite_maximo}"

@@ -23,7 +23,7 @@ from django.contrib.auth import views as auth_views
 from veiculo import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, name='admin'),
     path('', include('core.urls' )),
     path('veiculos/', include('veiculo.urls')),
     path('clientes/', include('clientes.urls')),

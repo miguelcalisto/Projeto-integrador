@@ -45,6 +45,16 @@
             <td colspan="3">Nenhuma vaga cadastrada.</td>
         </tr>
         {% endfor %}
-    </tbody>
+
+
+    </tbody>    {% if messages %}
+  <div>
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
 </table>
 {% endblock %}
