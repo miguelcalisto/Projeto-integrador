@@ -28,6 +28,10 @@
                 <td>{{ v.dono }}</td>
 
                 <td>
+                    <a href="{% url 'detalhe_veiculo' v.pk %}" class="btn btn-info btn-sm">
+    Ver
+</a>
+
                     <a href="{% url 'editar_veiculo' v.pk %}" class="btn btn-warning btn-sm">Editar</a>
                     <a href="{% url 'deletar_veiculo' v.pk %}" class="btn btn-danger btn-sm">Deletar</a>
                 </td>

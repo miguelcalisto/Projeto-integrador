@@ -25,3 +25,12 @@ class VeiculoDeleteView(LoginRequiredMixin,DeleteView):
     model = Veiculo
     template_name = 'confirm_delete.html'
     success_url = reverse_lazy('lista_veiculos')
+
+
+
+from django.views.generic import DetailView
+
+class VeiculoDetailView(LoginRequiredMixin, DetailView):
+    model = Veiculo
+    template_name = 'detalhe_veiculo.html'
+    context_object_name = 'veiculo'

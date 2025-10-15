@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Detalhes do Veículo{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Detalhes do Veículo</h1>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title"> <strong>Placa: </strong>{{ veiculo.placa }}</h5>
+         <p class="card-text"><strong>Modelo:</strong> {{ veiculo.modelo }}</p>
+        <p class="card-text"><strong>Cor:</strong> {{ veiculo.cor }}</p>
+        <p class="card-text"><strong>Dono:</strong> {{ veiculo.dono.nome }}</p>
+
+    </div>
+</div>
+
+<a href="{% url 'editar_veiculo' veiculo.pk %}" class="btn btn-warning mt-3">
+    <i class="bi bi-pencil-square"></i> Editar
+</a>
+<a href="{% url 'deletar_veiculo' veiculo.pk %}" class="btn btn-danger mt-3">
+    <i class="bi bi-trash"></i> Excluir
+</a>
+<a href="{% url 'lista_veiculos' %}" class="btn btn-secondary mt-3">Voltar</a>
+{% endblock %}

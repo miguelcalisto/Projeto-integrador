@@ -24,7 +24,7 @@
        {% if object.pago %}disabled{% endif %}>
        {% if object.pago %}Pago{% else %}Confirmar Pagamento{% endif %}
     </a>
-    <a href="{% url 'estada:detalhe-estada' object.pk %}" class="btn btn-secondary">Cancelar</a>
+    <a href="{% url 'estada:lista-estadas' %}" class="btn btn-secondary">Cancelar</a>
 </form>
 
 

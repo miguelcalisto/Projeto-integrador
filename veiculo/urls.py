@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    VeiculoListView, VeiculoCreateView, VeiculoUpdateView, VeiculoDeleteView
+    VeiculoListView, VeiculoCreateView, VeiculoUpdateView, VeiculoDeleteView, VeiculoDetailView
 )
 
 urlpatterns = [
@@ -8,4 +8,6 @@ urlpatterns = [
     path('veiculos/novo/', VeiculoCreateView.as_view(), name='criar_veiculo'),
     path('veiculos/<int:pk>/editar/', VeiculoUpdateView.as_view(), name='editar_veiculo'),
     path('veiculos/<int:pk>/deletar/', VeiculoDeleteView.as_view(), name='deletar_veiculo'),
+
+    path('veiculos/<int:pk>/', VeiculoDetailView.as_view(), name='detalhe_veiculo'),
 ]

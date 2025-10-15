@@ -48,7 +48,7 @@ class EstadaCreateView(LoginRequiredMixin, CreateView):
     def enviar_email_pagamento(self, estada):
         subject = f'Pagamento confirmado para Estada {estada.pk}'
         from_email = settings.DEFAULT_FROM_EMAIL
-        to = ['EMAIL']
+        to = ['SEU_EMAIL']
 
         context = {
             'estada': estada,
@@ -90,7 +90,7 @@ class EstadaUpdateView(LoginRequiredMixin, UpdateView):
     def enviar_email_pagamento(self, estada):
         subject = f'Pagamento confirmado para Estada {estada.pk}'
         from_email = settings.DEFAULT_FROM_EMAIL
-        to = ['EMAIL']
+        to = ['SEU_EMAIL']
 
         context = {
             'estada': estada,
@@ -155,7 +155,7 @@ def confirmar_pagamento(request, pk):
 
     subject = f'Pagamento confirmado para Estada {estada.pk}'
     from_email = settings.DEFAULT_FROM_EMAIL
-    to = ['EMAIL']
+    to = ['SEU_EMAIL']
 
     # Contexto para o template HTML
     context = {
