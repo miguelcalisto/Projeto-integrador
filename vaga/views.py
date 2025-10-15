@@ -64,15 +64,33 @@ class VagaDeleteView(LoginRequiredMixin,DeleteView):
     success_url = reverse_lazy('vaga:lista-vagas')
 
 
+# class DashboardView(LoginRequiredMixin, TemplateView):
+#     template_name = 'dashboard.html'
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         # Exemplo: Contagem de vagas por status
+#         vagas_livre = Vaga.objects.filter(status='livre').count()
+#         vagas_ocupada = Vaga.objects.filter(status='ocupada').count()
+#
+#         context['vagas_livre'] = vagas_livre
+#         context['vagas_ocupada'] = vagas_ocupada
+#         return context
+
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Exemplo: Contagem de vagas por status
-        vagas_livre = Vaga.objects.filter(status='livre').count()
-        vagas_ocupada = Vaga.objects.filter(status='ocupada').count()
+        # Obtenha todas as vagas ordenadas por número
+        vagas = Vaga.objects.all().order_by('numero')
+        # Transforme em lista de dicionários
+        vagas_status = []
+        for v in vagas:
+            vagas_status.append({
+                "numero": v.numero,
+                "status": v.status
+            })
 
-        context['vagas_livre'] = vagas_livre
-        context['vagas_ocupada'] = vagas_ocupada
+        context['vagas_status'] = vagas_status
         return context

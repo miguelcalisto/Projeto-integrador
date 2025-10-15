@@ -1,51 +1,66 @@
-<div style="display: flex; justify-content: center; align-items: center; margin-top: 40px;">
-  <canvas id="vagaChart" width="1200" height="750" style="max-width: 1200px; max-height: 750px;"></canvas>
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="text-center mb-4">Mapa de Vagas</h1>
+
+<!-- Grade de Vagas -->
+<div id="mapa-vagas-container"
+     style="display: grid; gap: 8px; justify-content: center; margin-top: 40px;">
 </div>
 
-<!-- Chart.js + Plugin de Data Labels -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+<!-- Legenda com Totais -->
+<div class="mt-5 text-center" style="font-size: 1.25rem; font-weight: 500;">
+    <span style="color: #28a745;"><i class="bi bi-square-fill"></i> Vagas Livres:</span> <span id="total-livres"></span>
+    &nbsp;&nbsp;&nbsp;
+    <span style="color: #dc3545;"><i class="bi bi-square-fill"></i> Vagas Ocupadas:</span> <span id="total-ocupadas"></span>
+    &nbsp;&nbsp;&nbsp;
+    <span><strong>Total:</strong> <span id="total-geral"></span></span>
+</div>
 
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<!-- Script para gerar a grade -->
 <script>
-  const ctx = document.getElementById('vagaChart').getContext('2d');
+  const vagas = {{ vagas_status|safe }};
+  const colunas = 10;
 
-  const vagaChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Livre', 'Ocupada'],
-      datasets: [{
-        label: 'Status das Vagas',
-        data: [{{ vagas_livre }}, {{ vagas_ocupada }}],
-        backgroundColor: ['#28a745', '#dc3545'],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      aspectRatio: 2,
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: {
-            font: {
-              size: 26
-            },
-            padding: 26
-          }
-        },
-        datalabels: {
-          color: '#fff',
-          font: {
-            weight: 'bold',
-            size: 24
-          },
-          formatter: function(value) {
-            return value; // Exibe o número (ex: 10, 5)
-          }
-        }
-      }
-    },
-    plugins: [ChartDataLabels] // Ativa o plugin
+  const container = document.getElementById('mapa-vagas-container');
+  container.style.gridTemplateColumns = `repeat(${colunas}, 1fr)`;
+
+  let livres = 0;
+  let ocupadas = 0;
+
+  vagas.forEach(v => {
+    const div = document.createElement('div');
+    div.style.width = '60px';
+    div.style.height = '60px';
+    div.style.borderRadius = '4px';
+    div.style.display = 'flex';
+    div.style.alignItems = 'center';
+    div.style.justifyContent = 'center';
+    div.style.fontWeight = 'bold';
+    div.style.color = 'white';
+    div.style.fontSize = '18px';
+    div.style.cursor = 'default';
+
+    if (v.status === 'livre') {
+      div.style.backgroundColor = '#28a745';
+      livres++;
+    } else {
+      div.style.backgroundColor = '#dc3545';
+      ocupadas++;
+    }
+
+    div.innerText = v.numero;
+    div.title = `Vaga ${v.numero} — ${v.status}`;
+    container.appendChild(div);
   });
+
+  // Atualizar totais na legenda
+  document.getElementById('total-livres').textContent = livres;
+  document.getElementById('total-ocupadas').textContent = ocupadas;
+  document.getElementById('total-geral').textContent = vagas.length;
 </script>
+{% endblock %}
