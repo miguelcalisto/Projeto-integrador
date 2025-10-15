@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from .models import Vaga
 from .forms import VagaForm
 
@@ -62,3 +62,17 @@ class VagaDeleteView(LoginRequiredMixin,DeleteView):
     model = Vaga
     template_name = 'deletar-vaga.html'
     success_url = reverse_lazy('vaga:lista-vagas')
+
+
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Exemplo: Contagem de vagas por status
+        vagas_livre = Vaga.objects.filter(status='livre').count()
+        vagas_ocupada = Vaga.objects.filter(status='ocupada').count()
+
+        context['vagas_livre'] = vagas_livre
+        context['vagas_ocupada'] = vagas_ocupada
+        return context
