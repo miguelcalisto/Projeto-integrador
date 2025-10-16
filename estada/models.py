@@ -55,3 +55,14 @@ class Estada(models.Model):
 
 
 
+class PagamentoLog(models.Model):
+    veiculo = models.ForeignKey(Veiculo, on_delete=models.SET_NULL, null=True)
+    vaga = models.ForeignKey(Vaga, on_delete=models.SET_NULL, null=True)
+    funcionario = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True)
+    data_pagamento = models.DateTimeField(default=timezone.now)
+    valor_pago = models.DecimalField(max_digits=8, decimal_places=2)
+    modalidade_pagamento = models.CharField(max_length=10)
+    tempo_total = models.DurationField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Pagamento do veículo {self.veiculo} em {self.data_pagamento.strftime('%d/%m/%Y %H:%M')}"
