@@ -1,14 +1,17 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from django.utils import timezone
+
 from vaga.models import Vaga
 from .models import Estada
 
 
 class EstadaForm(forms.ModelForm):
+
     class Meta:
         model = Estada
-        fields = '__all__'
+        fields = ['vaga', 'funcionario_responsavel', 'veiculo']  # Excluídos: data_saida, valor_pagamento, tempo_total
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,7 +26,7 @@ class EstadaForm(forms.ModelForm):
 
         # Exibir apenas vagas com status "livre" OU a vaga já selecionada no formulário (se editar)
         if self.instance and self.instance.pk:
-            # inclui a vaga atual no queryset para poder editá-la
+            # Inclui a vaga atual no queryset para poder editá-la
             self.fields['vaga'].queryset = Vaga.objects.filter(status='livre') | Vaga.objects.filter(
                 pk=self.instance.vaga.pk)
         else:
@@ -40,3 +43,17 @@ class EstadaForm(forms.ModelForm):
                 raise forms.ValidationError(f"A vaga {vaga.numero} já está ocupada.")
 
         return cleaned_data
+
+
+class ConfirmarPagamentoForm(forms.ModelForm):  # Mantido como na resposta anterior
+
+    class Meta:
+        model = Estada
+        fields = ['modalidade_pagamento']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'instance' in kwargs:
+            instance = kwargs['instance']
+            if not instance.data_saida:
+                instance.data_saida = timezone.now()  # Importe timezone de django.utils

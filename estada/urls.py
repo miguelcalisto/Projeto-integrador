@@ -16,4 +16,5 @@ urlpatterns = [
     path('editar/<int:pk>/', EstadaUpdateView.as_view(), name='editar-estada'),
     path('deletar/<int:pk>/', EstadaDeleteView.as_view(), name='deletar-estada'),
     path('<int:pk>/confirmar-pagamento/', confirmar_pagamento, name='confirmar-pagamento'),
+    path('estada/<int:pk>/confirmar-pagamento/', confirmar_pagamento, name='confirmar_pagamento')
 ]

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load tz %}  {# Importante para usar o filtro localtime, caso queira #}
+
+{% block title %}Confirmar Pagamento{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Confirmação de Pagamento</h1>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <h5 class="card-title">Detalhes da Estada</h5>
+    <p class="card-text">
+      <strong>Veículo:</strong> {{ estada.veiculo }} <br>
+      <strong>Vaga:</strong> {{ estada.vaga }} <br>
+      <strong>Data Entrada:</strong> {{ estada.data_entrada|localtime|date:"d/m/Y H:i" }} <br>
+      {% if estada.data_saida %}
+      <strong>Data Saída:</strong> {{ estada.data_saida|localtime|date:"d/m/Y H:i" }} <br>
+      {% endif %}
+      {% if estada.tempo_total %}
+      <strong>Tempo Total:</strong> {{ estada.tempo_total }} <br>
+      {% endif %}
+      {% if estada.valor_pagamento %}
+      <strong>Valor Pago:</strong> R$ {{ estada.valor_pagamento }} <br>
+      {% endif %}
+    </p>
+  </div>
+</div>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger mb-3">
+        {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    {{ form|crispy }}
+
+    <button type="submit" class="btn btn-success">
+      <i class="bi bi-cash-stack me-2"></i> Confirmar Pagamento
+    </button>
+    <a href="{% url 'estada:lista-estadas' %}" class="btn btn-secondary ms-3">Cancelar</a>
+</form>
+{% endblock %}

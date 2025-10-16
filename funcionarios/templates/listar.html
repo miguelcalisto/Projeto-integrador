@@ -12,6 +12,7 @@
           <tr>
               <th>ID</th>
               <th>Nome</th>
+              <th>CPF</th>
               <th>Ações</th>
           </tr>
       </thead>
@@ -20,6 +21,7 @@
           <tr>
               <td>{{ funcionario.id }}</td>
               <td>{{ funcionario.nome }}</td>
+               <td>{{ funcionario.cpf }}</td>
               <td>
                   <a href="{% url 'funcionarios:detalhe-funcionario' funcionario.pk %}" class="btn btn-info btn-sm">Detalhes</a>
                   <a href="{% url 'funcionarios:editar-funcionario' funcionario.pk %}" class="btn btn-warning btn-sm">Editar</a>

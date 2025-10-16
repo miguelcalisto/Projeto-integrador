@@ -145,8 +145,10 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 # EMAIL_HOST_USER = 'EMAIL'
-EMAIL_HOST_USER = 'SEU_EMAIL'
+EMAIL_HOST_USER = 'miguelcalistors@gmail.com'
 
-EMAIL_HOST_PASSWORD = 'SUA_SENHA_APP'  # Use variáveis de ambiente para segurança!
+EMAIL_HOST_PASSWORD = 'pabjnnihwsfvywjw'  # Use variáveis de ambiente para segurança!
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+TIME_ZONE = 'America/Sao_Paulo'  # ou o timezone correto da sua região
+USE_TZ = True
