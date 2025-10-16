@@ -77,20 +77,36 @@ class VagaDeleteView(LoginRequiredMixin,DeleteView):
 #         context['vagas_ocupada'] = vagas_ocupada
 #         return context
 
+from estada.models import Estada
+import json
+
+import json
+
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Obtenha todas as vagas ordenadas por número
         vagas = Vaga.objects.all().order_by('numero')
-        # Transforme em lista de dicionários
+
         vagas_status = []
-        for v in vagas:
+        for vaga in vagas:
+            veiculo_info = None
+
+            if vaga.status == 'ocupada':
+                estada_ativa = Estada.objects.filter(vaga=vaga, data_saida__isnull=True).select_related('veiculo').first()
+
+                if estada_ativa and estada_ativa.veiculo:
+                    veiculo_info = {
+                        "modelo": estada_ativa.veiculo.modelo,
+                        "placa": estada_ativa.veiculo.placa,
+                    }
+
             vagas_status.append({
-                "numero": v.numero,
-                "status": v.status
+                "numero": vaga.numero,
+                "status": vaga.status,
+                "veiculo": veiculo_info
             })
 
-        context['vagas_status'] = vagas_status
+        context['vagas_status'] = json.dumps(vagas_status)  # <-- importante!
         return context
