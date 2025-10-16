@@ -24,12 +24,14 @@ class EstadaForm(forms.ModelForm):
         self.helper.field_class = 'col-md-8'
         self.helper.add_input(Submit('submit', 'Salvar'))
 
-        # Exibir apenas vagas com status "livre" OU a vaga já selecionada no formulário (se editar)
+        # Se estiver editando uma estada existente, desabilita o campo vaga
         if self.instance and self.instance.pk:
-            # Inclui a vaga atual no queryset para poder editá-la
-            self.fields['vaga'].queryset = Vaga.objects.filter(status='livre') | Vaga.objects.filter(
-                pk=self.instance.vaga.pk)
+            # Deixa o campo vaga visível, mas desabilitado para não ser editável
+            self.fields['vaga'].disabled = True
+            # Ajusta o queryset para exibir somente a vaga atual
+            self.fields['vaga'].queryset = Vaga.objects.filter(pk=self.instance.vaga.pk)
         else:
+            # Se for criação, lista as vagas livres para escolher
             self.fields['vaga'].queryset = Vaga.objects.filter(status='livre')
 
     def clean(self):
@@ -38,6 +40,7 @@ class EstadaForm(forms.ModelForm):
 
         estada_atual = self.instance
 
+        # Se a vaga estiver ocupada e for uma criação ou troca de vaga, levanta erro
         if vaga and vaga.status == 'ocupada':
             if not estada_atual.pk or estada_atual.vaga != vaga:
                 raise forms.ValidationError(f"A vaga {vaga.numero} já está ocupada.")

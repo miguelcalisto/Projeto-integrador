@@ -49,3 +49,9 @@ class Estada(models.Model):
             vaga.status = 'livre'
             vaga.save()
         super().delete(*args, **kwargs)
+
+
+
+
+
+
