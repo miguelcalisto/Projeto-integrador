@@ -3,6 +3,18 @@
 {% block title %}Lista de Estadas{% endblock %}
 
 {% block content %}
+
+{% if messages %}
+  <div>
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
 <h1 class="mb-4">Lista de Estadas</h1>
 
 <a href="{% url 'estada:criar-estada' %}" class="btn btn-primary mb-3">Nova Estada</a>

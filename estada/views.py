@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
 from django.core.mail import send_mail, EmailMultiAlternatives
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
@@ -63,6 +64,7 @@ class EstadaDeleteView(LoginRequiredMixin, DeleteView):
         response = super().delete(request, *args, **kwargs)
         return response
 
+
 @login_required(login_url='login')
 def confirmar_pagamento(request, pk):
     estada = get_object_or_404(Estada, pk=pk)
@@ -88,7 +90,10 @@ def confirmar_pagamento(request, pk):
                 tempo_total=estada.tempo_total,
             )
 
-            messages.success(request, 'Pagamento confirmado e registrado com sucesso!')
+            # Excluir a estada após confirmação do pagamento
+            estada.delete()
+
+            messages.success(request, 'Pagamento confirmado, registrado e estada excluída com sucesso!')
             return redirect('estada:lista-estadas')
 
     else:
@@ -97,6 +102,32 @@ def confirmar_pagamento(request, pk):
     context = {'estada': estada, 'form': form}
     return render(request, 'confirmar_pagamento.html', context)
 
+
 def historico_pagamentos(request):
     pagamentos = PagamentoLog.objects.all().order_by('-data_pagamento')
     return render(request, 'historico_pagamentos.html', {'pagamentos': pagamentos})
+
+
+def exportar_pagamentos_txt(request):
+    pagamentos = PagamentoLog.objects.all().order_by('-data_pagamento')
+
+    linhas = []
+    for idx, p in enumerate(pagamentos, start=1):
+        linha = (
+            f"{idx} - "
+            f"Veículo: {p.veiculo} | "
+            f"Vaga: {p.vaga} | "
+            f"Funcionário: {p.funcionario} | "
+            f"Data: {p.data_pagamento.strftime('%d/%m/%Y %H:%M')} | "
+            f"Tempo: {p.tempo_total} | "
+            f"Valor: R$ {p.valor_pago} | "
+            f"Modalidade: {p.modalidade_pagamento}"
+        )
+        linhas.append(linha)
+        linhas.append("")  # linha em branco para espaçamento
+
+    conteudo = "\n".join(linhas)
+
+    response = HttpResponse(conteudo, content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename=relatorio_pagamentos.txt'
+    return response
