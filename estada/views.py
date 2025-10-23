@@ -116,6 +116,7 @@ def historico_pagamentos(request):
 
     return render(request, 'historico_pagamentos.html', {'pagamentos': pagamentos})
 
+from django.utils import timezone  # só uma vez no topo do arquivo
 
 
 def exportar_pagamentos_txt(request):
@@ -123,6 +124,9 @@ def exportar_pagamentos_txt(request):
 
     linhas = []
     for idx, p in enumerate(pagamentos, start=1):
+        data_local = timezone.localtime(p.data_pagamento)  # converte pro horário local
+
+
         linha = (
             f"{idx} - "
             f"Veículo: {p.veiculo} | "
@@ -189,6 +193,8 @@ def exportar_pagamentos_pdf(request):
 
     for idx, pagamento in enumerate(pagamentos, start=1):
         # 🔹 Monta a primeira linha com somente os campos existentes
+        data_local = timezone.localtime(pagamento.data_pagamento)  # converte
+
         linha1_partes = [
             f"{idx}. Veículo: {pagamento.veiculo}" if pagamento.veiculo else None,
             f"Vaga: {pagamento.vaga}" if pagamento.vaga else None,
@@ -198,7 +204,8 @@ def exportar_pagamentos_pdf(request):
 
         # 🔹 Segunda linha com os dados de tempo e pagamento
         linha2_partes = [
-            f"Data: {pagamento.data_pagamento.strftime('%d/%m/%Y %H:%M')}" if pagamento.data_pagamento else None,
+            f"Data: {data_local.strftime('%d/%m/%Y %H:%M')}" if pagamento.data_pagamento else None,
+
             f"Tempo: {pagamento.tempo_total}" if pagamento.tempo_total else None,
             f"Valor: R$ {pagamento.valor_pago}" if pagamento.valor_pago is not None else None,
             f"Modalidade: {pagamento.modalidade_pagamento}" if pagamento.modalidade_pagamento else None,

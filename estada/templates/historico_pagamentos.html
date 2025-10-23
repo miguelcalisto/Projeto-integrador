@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Histórico de Pagamentos{% endblock %}
+{% load tz %}
 
 {% block content %}
 <h1>Histórico de Pagamentos</h1>
@@ -22,7 +23,9 @@
       <td>{{ pagamento.veiculo }}</td>
       <td>{{ pagamento.vaga }}</td>
       <td>{{ pagamento.funcionario }}</td>
-      <td>{{ pagamento.data_pagamento|date:"d/m/Y H:i" }}</td>
+    <td> {{ pagamento.data_pagamento|localtime|date:"d/m/Y H:i" }} </td>
+
+
       <td>{{ pagamento.tempo_total }}</td>
       <td>{{ pagamento.valor_pago }}</td>
       <td>{{ pagamento.modalidade_pagamento }}</td>
