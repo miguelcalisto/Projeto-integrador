@@ -4,7 +4,7 @@ from .views import (
     EstadaDetailView,
     EstadaCreateView,
     EstadaUpdateView,
-    EstadaDeleteView, confirmar_pagamento, historico_pagamentos, exportar_pagamentos_txt,
+    EstadaDeleteView, confirmar_pagamento, historico_pagamentos, exportar_pagamentos_txt, exportar_pagamentos_pdf,
 )
 
 app_name = 'estada'  # Namespace para o app
@@ -19,4 +19,6 @@ urlpatterns = [
     path('estada/<int:pk>/confirmar-pagamento/', confirmar_pagamento, name='confirmar_pagamento'),
     path('historico-pagamentos/', historico_pagamentos, name='historico-pagamentos'),
     path('exportar-pagamentos/', exportar_pagamentos_txt, name='exportar-pagamentos'),
+    path('exportar-pagamentos-pdf/', exportar_pagamentos_pdf, name='exportar-pagamentos-pdf'),
+
 ]

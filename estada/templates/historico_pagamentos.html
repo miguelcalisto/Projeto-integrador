@@ -35,4 +35,9 @@
 <a href="{% url 'estada:exportar-pagamentos' %}" class="btn btn-outline-primary mb-3" download>
   📄 Baixar Relatório TXT
 </a>
+
+<a href="{% url 'estada:exportar-pagamentos-pdf' %}" class="btn btn-outline-danger mb-3" download>
+    <i class="bi bi-file-earmark-pdf-fill"></i> Baixar Relatório PDF
+</a>
+
 {% endblock %}

@@ -131,3 +131,82 @@ def exportar_pagamentos_txt(request):
     response = HttpResponse(conteudo, content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename=relatorio_pagamentos.txt'
     return response
+
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+import textwrap
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+from django.http import HttpResponse
+from .models import PagamentoLog
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+from django.http import HttpResponse
+from .models import PagamentoLog
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+from django.http import HttpResponse
+from .models import PagamentoLog
+
+def exportar_pagamentos_pdf(request):
+    pagamentos = PagamentoLog.objects.all().order_by('-data_pagamento')
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="relatorio_pagamentos.pdf"'
+
+    p = canvas.Canvas(response, pagesize=A4)
+    largura, altura = A4
+    y = altura - 3 * cm
+
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(2 * cm, y, "Relatório de Pagamentos - Estacionamento")
+    y -= 1 * cm
+
+    p.setFont("Helvetica", 10)
+
+    for idx, pagamento in enumerate(pagamentos, start=1):
+        # 🔹 Monta a primeira linha com somente os campos existentes
+        linha1_partes = [
+            f"{idx}. Veículo: {pagamento.veiculo}" if pagamento.veiculo else None,
+            f"Vaga: {pagamento.vaga}" if pagamento.vaga else None,
+            f"Funcionário: {pagamento.funcionario}" if pagamento.funcionario else None,
+        ]
+        linha1 = " | ".join([parte for parte in linha1_partes if parte])  # remove os None
+
+        # 🔹 Segunda linha com os dados de tempo e pagamento
+        linha2_partes = [
+            f"Data: {pagamento.data_pagamento.strftime('%d/%m/%Y %H:%M')}" if pagamento.data_pagamento else None,
+            f"Tempo: {pagamento.tempo_total}" if pagamento.tempo_total else None,
+            f"Valor: R$ {pagamento.valor_pago}" if pagamento.valor_pago is not None else None,
+            f"Modalidade: {pagamento.modalidade_pagamento}" if pagamento.modalidade_pagamento else None,
+        ]
+        linha2 = " | ".join([parte for parte in linha2_partes if parte])
+
+        # 🔹 Desenha as duas linhas
+        p.drawString(2 * cm, y, linha1)
+        y -= 0.6 * cm
+        p.drawString(2.5 * cm, y, linha2)
+        y -= 0.8 * cm
+
+        # Quebra de página automática
+        if y <= 2 * cm:
+            p.showPage()
+            p.setFont("Helvetica", 10)
+            y = altura - 2 * cm
+
+    p.showPage()
+    p.save()
+    return response
