@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
 from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -104,8 +105,17 @@ def confirmar_pagamento(request, pk):
 
 
 def historico_pagamentos(request):
-    pagamentos = PagamentoLog.objects.all().order_by('-data_pagamento')
+    pagamentos_list = PagamentoLog.objects.all().order_by('-data_pagamento')
+
+    # 🔹 Define quantos registros por página (ex: 10)
+    paginator = Paginator(pagamentos_list, 10)
+
+    # 🔹 Obtém o número da página via GET (ex: ?page=2)
+    page_number = request.GET.get('page')
+    pagamentos = paginator.get_page(page_number)
+
     return render(request, 'historico_pagamentos.html', {'pagamentos': pagamentos})
+
 
 
 def exportar_pagamentos_txt(request):
