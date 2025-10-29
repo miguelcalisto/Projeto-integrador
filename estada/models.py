@@ -1,6 +1,7 @@
 from django.db import models
 from funcionarios.models import Funcionario
 from vaga.models import Vaga
+from valorpagamento.models import ValorPagamento
 from veiculo.models import Veiculo
 from django.utils import timezone
 from datetime import timedelta
@@ -35,12 +36,17 @@ class Estada(models.Model):
             return self.data_saida - self.data_entrada
         return None
 
-    def calcular_valor_pagamento(self, taxa_por_hora=5.00):
+    def calcular_valor_pagamento(self):
         if self.data_saida and self.data_entrada:
             tempo_total = self.calcular_tempo_total()
             if tempo_total:
+                # Pega o valor atual do CRUD (usando o primeiro objeto como padrão)
+                try:
+                    taxa = ValorPagamento.objects.first().valor_hora
+                except AttributeError:
+                    taxa = 5.00  # fallback caso não tenha nenhum registro
                 horas = tempo_total.total_seconds() / 3600
-                return round(horas * taxa_por_hora, 2)
+                return round(horas * float(taxa), 2)
         return 0.00
 
     def delete(self, *args, **kwargs):
