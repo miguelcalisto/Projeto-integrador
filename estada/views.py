@@ -297,5 +297,6 @@ def confirmar_pagamento(request, pk):
     else:
         form = ConfirmarPagamentoForm(instance=estada)
 
+
     context = {'estada': estada, 'form': form}
     return render(request, 'confirmar_pagamento.html', context)
