@@ -227,3 +227,75 @@ def exportar_pagamentos_pdf(request):
     p.showPage()
     p.save()
     return response
+
+# emails
+
+@login_required(login_url='login')
+def confirmar_pagamento(request, pk):
+    estada = get_object_or_404(Estada, pk=pk)
+
+    if request.method == 'POST':
+        form = ConfirmarPagamentoForm(request.POST, instance=estada)
+        if form.is_valid():
+            estada = form.save(commit=False)
+            estada.data_saida = estada.data_saida or timezone.now()
+            estada.tempo_total = estada.calcular_tempo_total()
+            estada.valor_pagamento = estada.calcular_valor_pagamento()
+            estada.pago = True
+            estada.save()
+
+            # Salvar log de pagamento
+            PagamentoLog.objects.create(
+                veiculo=estada.veiculo,
+                vaga=estada.vaga,
+                funcionario=estada.funcionario_responsavel,
+                data_pagamento=timezone.now(),
+                valor_pago=estada.valor_pagamento,
+                modalidade_pagamento=estada.modalidade_pagamento,
+                tempo_total=estada.tempo_total,
+            )
+
+            # -------------------------------
+            # 🔹 Enviar e-mail de confirmação
+            # -------------------------------
+            subject = f'Pagamento confirmado - Estada #{estada.pk}'
+            from_email = settings.DEFAULT_FROM_EMAIL
+            # Aqui você pode enviar para o dono do veículo, ou um email fixo do sistema:
+            destinatarios = ['miguelcalistors@gmail.com']
+
+            if hasattr(estada.veiculo, 'cliente') and estada.veiculo.cliente.email:
+                destinatarios.append(estada.veiculo.cliente.email)
+            else:
+                # fallback: envia para o admin
+                destinatarios.append(settings.DEFAULT_FROM_EMAIL)
+
+            context = {
+                'estada': estada,
+                'veiculo': estada.veiculo,
+                'vaga': estada.vaga,
+                'funcionario': estada.funcionario_responsavel,
+                'tempo_total': estada.tempo_total,
+                'valor_pagamento': estada.valor_pagamento,
+                'modalidade': estada.modalidade_pagamento,
+                'data_saida': estada.data_saida,
+            }
+
+            html_content = render_to_string('emails/pagamento_confirmado.html', context)
+            text_content = render_to_string('emails/pagamento_confirmado.txt', context)
+
+            email = EmailMultiAlternatives(subject, text_content, from_email, destinatarios)
+            email.attach_alternative(html_content, "text/html")
+            email.send(fail_silently=False)
+            # -------------------------------
+
+            # Excluir a estada após pagamento
+            estada.delete()
+
+            messages.success(request, 'Pagamento confirmado, e-mail enviado e estada excluída com sucesso!')
+            return redirect('estada:lista-estadas')
+
+    else:
+        form = ConfirmarPagamentoForm(instance=estada)
+
+    context = {'estada': estada, 'form': form}
+    return render(request, 'confirmar_pagamento.html', context)
