@@ -30,11 +30,15 @@ urlpatterns = [
     path('funcionarios/', include('funcionarios.urls')),
     path('estada/', include('estada.urls', namespace='estada')),
     path('vaga/', include('vaga.urls')),
+    path('valorpagamento/', include('valorpagamento.urls')),
+
 
 
 # Autenticação
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+
+
 
 
 

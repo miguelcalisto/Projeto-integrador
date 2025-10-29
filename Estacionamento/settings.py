@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'vaga',
     'crispy_forms',
     'crispy_bootstrap5',
+    'valorpagamento',
 ]
 
 
