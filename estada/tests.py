@@ -1,4 +1,3 @@
-# estada/tests.py
 from django.test import TestCase
 from django.utils import timezone
 from datetime import timedelta
@@ -8,60 +7,58 @@ from clientes.models import Cliente
 from funcionarios.models import Funcionario
 from vaga.models import Vaga
 
-class RegrasEstadaTest(TestCase):
+class TestRegrasCombinadas(TestCase):
 
     def setUp(self):
-        # Criando funcionário
         self.funcionario = Funcionario.objects.create(
             nome="Funcionario Teste",
             cpf="12345678901",
             data_nascimento="1990-01-01",
         )
-
-        # Criando vagas
         self.vaga = Vaga.objects.create(numero=1, status="livre")
-
-        # Criando clientes PF e PJ
         self.cliente_pf = Cliente.objects.create(nome="Cliente PF", tipo="F")
         self.cliente_pj = Cliente.objects.create(nome="Cliente PJ", tipo="J")
-
-        # Criando veículos
         self.veiculo_pf = Veiculo.objects.create(placa="AAA1111", dono=self.cliente_pf)
         self.veiculo_pj = Veiculo.objects.create(placa="BBB2222", dono=self.cliente_pj)
-
-        # Criando taxa de pagamento
         ValorPagamento.objects.create(valor_hora=10.0)
 
-    def test_calculo_valores(self):
+    def test_todas_combinacoes_regras(self):
         agora = timezone.now()
+        combinacoes = [
+            # (veiculo, horas, modalidade, descricao)
+            (self.veiculo_pf, 2, Estada.DINHEIRO, "PF, 2h, Dinheiro"),
+            (self.veiculo_pf, 7, Estada.DINHEIRO, "PF, 7h, Dinheiro"),
+            (self.veiculo_pj, 2, Estada.DINHEIRO, "PJ, 2h, Dinheiro"),
+            (self.veiculo_pj, 7, Estada.DINHEIRO, "PJ, 7h, Dinheiro"),
+            (self.veiculo_pf, 2, Estada.PIX, "PF, 2h, PIX"),
+            (self.veiculo_pf, 7, Estada.PIX, "PF, 7h, PIX"),
+            (self.veiculo_pj, 2, Estada.PIX, "PJ, 2h, PIX"),
+            (self.veiculo_pj, 7, Estada.PIX, "PJ, 7h, PIX"),
+        ]
 
-        # Estada PF (5 horas, pagamento via cartão)
-        estada_pf = Estada.objects.create(
-            veiculo=self.veiculo_pf,
-            vaga=self.vaga,
-            funcionario_responsavel=self.funcionario,
-            data_entrada=agora,
-            data_saida=agora + timedelta(hours=5),
-            modalidade_pagamento=Estada.CARTAO
-        )
+        for veiculo, horas, modalidade, descricao in combinacoes:
+            with self.subTest(descricao=descricao):
+                estada = Estada.objects.create(
+                    veiculo=veiculo,
+                    vaga=self.vaga,
+                    funcionario_responsavel=self.funcionario,
+                    data_entrada=agora,
+                    data_saida=agora + timedelta(hours=horas),
+                    modalidade_pagamento=modalidade
+                )
 
-        # Estada PJ (7 horas, pagamento via Pix)
-        estada_pj = Estada.objects.create(
-            veiculo=self.veiculo_pj,
-            vaga=self.vaga,
-            funcionario_responsavel=self.funcionario,
-            data_entrada=agora,
-            data_saida=agora + timedelta(hours=7),
-            modalidade_pagamento=Estada.PIX
-        )
+                # Valor base
+                base = 10.0 * horas
 
-        # Calcula valores
-        valor_pf = estada_pf.calcular_valor_pagamento()
-        valor_pj = estada_pj.calcular_valor_pagamento()
+                # Aplicar regras passo a passo
+                if horas > 6:
+                    base *= 1.10  # +10% por mais de 6h
+                if getattr(veiculo.dono, 'tipo', '') == 'J':
+                    base *= 1.15  # +15% PJ
+                if modalidade == Estada.PIX:
+                    base *= 0.90  # -10% PIX
 
-        print("Valor PF:", valor_pf)
-        print("Valor PJ:", valor_pj)
+                valor_esperado = round(base, 2)
+                valor_calculado = estada.calcular_valor_pagamento()
 
-        # Regras de negócio:
-        # - Estada PJ maior que 6h (+10%) e pessoa jurídica (+15%), desconto Pix (-10%)
-        self.assertGreater(valor_pj, valor_pf)
+                self.assertAlmostEqual(valor_calculado, valor_esperado, places=2, msg=f"Falha na combinação: {descricao}")
