@@ -1,4 +1,3 @@
-# estada/tests.py
 from django.test import TestCase
 from django.utils import timezone
 from datetime import timedelta
@@ -11,42 +10,63 @@ from vaga.models import Vaga
 class RegrasEstadaTest(TestCase):
 
     def setUp(self):
-        # Criando funcionário
         self.funcionario = Funcionario.objects.create(
             nome="Funcionario Teste",
             cpf="12345678901",
             data_nascimento="1990-01-01",
         )
-
-        # Criando vagas
         self.vaga = Vaga.objects.create(numero=1, status="livre")
-
-        # Criando clientes PF e PJ
         self.cliente_pf = Cliente.objects.create(nome="Cliente PF", tipo="F")
         self.cliente_pj = Cliente.objects.create(nome="Cliente PJ", tipo="J")
-
-        # Criando veículos
         self.veiculo_pf = Veiculo.objects.create(placa="AAA1111", dono=self.cliente_pf)
         self.veiculo_pj = Veiculo.objects.create(placa="BBB2222", dono=self.cliente_pj)
-
-        # Criando taxa de pagamento
         ValorPagamento.objects.create(valor_hora=10.0)
 
-    def test_calculo_valores(self):
+    def test_desconto_pix(self):
         agora = timezone.now()
-
-        # Estada PF (5 horas, pagamento via cartão)
-        estada_pf = Estada.objects.create(
+        estada = Estada.objects.create(
             veiculo=self.veiculo_pf,
             vaga=self.vaga,
             funcionario_responsavel=self.funcionario,
             data_entrada=agora,
-            data_saida=agora + timedelta(hours=5),
+            data_saida=agora + timedelta(hours=2),
+            modalidade_pagamento=Estada.PIX
+        )
+        valor = estada.calcular_valor_pagamento()
+        esperado = 10.0 * 2 * 0.9  # 2 horas * 10/h * desconto 10% Pix
+        self.assertAlmostEqual(valor, esperado, places=2)
+
+    def test_taxa_acima_6_horas(self):
+        agora = timezone.now()
+        estada = Estada.objects.create(
+            veiculo=self.veiculo_pf,
+            vaga=self.vaga,
+            funcionario_responsavel=self.funcionario,
+            data_entrada=agora,
+            data_saida=agora + timedelta(hours=7),
             modalidade_pagamento=Estada.CARTAO
         )
+        valor = estada.calcular_valor_pagamento()
+        esperado = 10.0 * 7 * 1.10  # 7 horas * 10/h * +10%
+        self.assertAlmostEqual(valor, esperado, places=2)
 
-        # Estada PJ (7 horas, pagamento via Pix)
-        estada_pj = Estada.objects.create(
+    def test_taxa_pj(self):
+        agora = timezone.now()
+        estada = Estada.objects.create(
+            veiculo=self.veiculo_pj,
+            vaga=self.vaga,
+            funcionario_responsavel=self.funcionario,
+            data_entrada=agora,
+            data_saida=agora + timedelta(hours=3),
+            modalidade_pagamento=Estada.CARTAO
+        )
+        valor = estada.calcular_valor_pagamento()
+        esperado = 10.0 * 3 * 1.15  # 3 horas * 10/h * +15% PJ
+        self.assertAlmostEqual(valor, esperado, places=2)
+
+    def test_combinacao_pix_mais_6h_mais_pj(self):
+        agora = timezone.now()
+        estada = Estada.objects.create(
             veiculo=self.veiculo_pj,
             vaga=self.vaga,
             funcionario_responsavel=self.funcionario,
@@ -54,14 +74,8 @@ class RegrasEstadaTest(TestCase):
             data_saida=agora + timedelta(hours=7),
             modalidade_pagamento=Estada.PIX
         )
-
-        # Calcula valores
-        valor_pf = estada_pf.calcular_valor_pagamento()
-        valor_pj = estada_pj.calcular_valor_pagamento()
-
-        print("Valor PF:", valor_pf)
-        print("Valor PJ:", valor_pj)
-
-        # Regras de negócio:
-        # - Estada PJ maior que 6h (+10%) e pessoa jurídica (+15%), desconto Pix (-10%)
-        self.assertGreater(valor_pj, valor_pf)
+        valor = estada.calcular_valor_pagamento()
+        # Ordem: valor base * +10% (>6h) * +15% (PJ) * -10% (Pix)
+        base = 10.0 * 7
+        esperado = base * 1.10 * 1.15 * 0.9
+        self.assertAlmostEqual(valor, round(esperado, 2), places=2)
