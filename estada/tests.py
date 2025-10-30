@@ -1,55 +1,67 @@
+# estada/tests.py
 from django.test import TestCase
 from django.utils import timezone
 from datetime import timedelta
-from clientes.models import Cliente
+from estada.models import Estada, ValorPagamento
 from veiculo.models import Veiculo
-from estada.models import Estada
-from valorpagamento.models import ValorPagamento
+from clientes.models import Cliente
+from funcionarios.models import Funcionario
+from vaga.models import Vaga
 
 class RegrasEstadaTest(TestCase):
+
     def setUp(self):
-        # 1️⃣ Criar valor de hora
-        ValorPagamento.objects.update_or_create(id=1, defaults={'valor_hora': 5})
+        # Criando funcionário
+        self.funcionario = Funcionario.objects.create(
+            nome="Funcionario Teste",
+            cpf="12345678901",
+            data_nascimento="1990-01-01",
+        )
 
-        # 2️⃣ Criar clientes
-        self.pj = Cliente.objects.create(nome="Empresa X", email="x@empresa.com", telefone="1111", tipo="J", cnpj="12345678000199")
-        self.pf = Cliente.objects.create(nome="João", email="joao@gmail.com", telefone="2222", tipo="F", cpf="123.456.789-00")
+        # Criando vagas
+        self.vaga = Vaga.objects.create(numero=1, status="livre")
 
-        # 3️⃣ Criar veículos
-        self.v_pj = Veiculo.objects.create(placa="AAA-1111", modelo="Carro PJ", cor="Preto", dono=self.pj)
-        self.v_pf = Veiculo.objects.create(placa="BBB-2222", modelo="Carro PF", cor="Branco", dono=self.pf)
+        # Criando clientes PF e PJ
+        self.cliente_pf = Cliente.objects.create(nome="Cliente PF", tipo="F")
+        self.cliente_pj = Cliente.objects.create(nome="Cliente PJ", tipo="J")
 
-        # 4️⃣ Definir tempos
-        self.agora = timezone.now()
-        self.tempos = {
-            "curta": self.agora - timedelta(minutes=30),  # <6h
-            "longa": self.agora - timedelta(hours=7),     # >6h
-        }
+        # Criando veículos
+        self.veiculo_pf = Veiculo.objects.create(placa="AAA1111", dono=self.cliente_pf)
+        self.veiculo_pj = Veiculo.objects.create(placa="BBB2222", dono=self.cliente_pj)
 
-    def test_regras_negocio_estadas(self):
-        # Criar estadas
-        testes = [
-            {"veiculo": self.v_pj, "entrada": self.tempos["curta"], "saida": self.agora, "modalidade": "pix", "desc": "PJ + Pix <6h"},
-            {"veiculo": self.v_pf, "entrada": self.tempos["curta"], "saida": self.agora, "modalidade": "pix", "desc": "PF + Pix <6h"},
-            {"veiculo": self.v_pj, "entrada": self.tempos["longa"], "saida": self.agora, "modalidade": "dinheiro", "desc": "PJ + Dinheiro >6h"},
-            {"veiculo": self.v_pf, "entrada": self.tempos["longa"], "saida": self.agora, "modalidade": "dinheiro", "desc": "PF + Dinheiro >6h"},
-            {"veiculo": self.v_pj, "entrada": self.tempos["longa"], "saida": self.agora, "modalidade": "pix", "desc": "PJ + Pix >6h"},
-        ]
+        # Criando taxa de pagamento
+        ValorPagamento.objects.create(valor_hora=10.0)
 
-        for t in testes:
-            estada = Estada.objects.create(
-                veiculo=t["veiculo"],
-                data_saida=t["saida"],
-                modalidade_pagamento=t["modalidade"]
-            )
-            # O auto_now_add deve preencher data_entrada automaticamente
-            self.assertIsNotNone(estada.data_entrada)
+    def test_calculo_valores(self):
+        agora = timezone.now()
 
-            # Simular cálculo de tempo total e valor
-            # Ajustar data_entrada manualmente para teste
-            estada.data_entrada = t["entrada"]
-            estada.save()
-            valor = estada.calcular_valor_pagamento()
-            tempo_total = estada.calcular_tempo_total()
+        # Estada PF (5 horas, pagamento via cartão)
+        estada_pf = Estada.objects.create(
+            veiculo=self.veiculo_pf,
+            vaga=self.vaga,
+            funcionario_responsavel=self.funcionario,
+            data_entrada=agora,
+            data_saida=agora + timedelta(hours=5),
+            modalidade_pagamento=Estada.CARTAO
+        )
 
-            print(f"{t['desc']}: Tempo total={tempo_total}, Valor calculado={valor}")
+        # Estada PJ (7 horas, pagamento via Pix)
+        estada_pj = Estada.objects.create(
+            veiculo=self.veiculo_pj,
+            vaga=self.vaga,
+            funcionario_responsavel=self.funcionario,
+            data_entrada=agora,
+            data_saida=agora + timedelta(hours=7),
+            modalidade_pagamento=Estada.PIX
+        )
+
+        # Calcula valores
+        valor_pf = estada_pf.calcular_valor_pagamento()
+        valor_pj = estada_pj.calcular_valor_pagamento()
+
+        print("Valor PF:", valor_pf)
+        print("Valor PJ:", valor_pj)
+
+        # Regras de negócio:
+        # - Estada PJ maior que 6h (+10%) e pessoa jurídica (+15%), desconto Pix (-10%)
+        self.assertGreater(valor_pj, valor_pf)
