@@ -1,6 +1,8 @@
 Pagamento confirmado com sucesso!
 
 Estada ID: {{ estada.pk }}
+Valor da Hora: R$ {{ valor_hora|floatformat:2 }}
+
 Data de entrada: {{ estada.data_entrada }}
 Data de saída: {{ estada.data_saida|default:"-" }}
 Valor pago: R$ {{ estada.valor_pagamento|default:"0.00" }}
