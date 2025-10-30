@@ -17,8 +17,10 @@ class Estada(models.Model):
         (PIX, 'Pix'),
     ]
 
-    # data_entrada = models.DateTimeField(auto_now_add=True)
-    data_entrada = models.DateTimeField()
+    data_entrada = models.DateTimeField(auto_now_add=True)
+    # data_entrada = models.DateTimeField()
+
+
     data_saida = models.DateTimeField(null=True, blank=True)
     vaga = models.ForeignKey(Vaga, on_delete=models.SET_NULL, null=True, blank=True)
     valor_pagamento = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
