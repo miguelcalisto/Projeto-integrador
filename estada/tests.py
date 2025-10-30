@@ -7,7 +7,7 @@ from clientes.models import Cliente
 from funcionarios.models import Funcionario
 from vaga.models import Vaga
 
-class RegrasEstadaTest(TestCase):
+class TestRegrasCombinadas(TestCase):
 
     def setUp(self):
         self.funcionario = Funcionario.objects.create(
@@ -22,60 +22,43 @@ class RegrasEstadaTest(TestCase):
         self.veiculo_pj = Veiculo.objects.create(placa="BBB2222", dono=self.cliente_pj)
         ValorPagamento.objects.create(valor_hora=10.0)
 
-    def test_desconto_pix(self):
+    def test_todas_combinacoes_regras(self):
         agora = timezone.now()
-        estada = Estada.objects.create(
-            veiculo=self.veiculo_pf,
-            vaga=self.vaga,
-            funcionario_responsavel=self.funcionario,
-            data_entrada=agora,
-            data_saida=agora + timedelta(hours=2),
-            modalidade_pagamento=Estada.PIX
-        )
-        valor = estada.calcular_valor_pagamento()
-        esperado = 10.0 * 2 * 0.9  # 2 horas * 10/h * desconto 10% Pix
-        self.assertAlmostEqual(valor, esperado, places=2)
+        combinacoes = [
+            # (veiculo, horas, modalidade, descricao)
+            (self.veiculo_pf, 2, Estada.DINHEIRO, "PF, 2h, Dinheiro"),
+            (self.veiculo_pf, 7, Estada.DINHEIRO, "PF, 7h, Dinheiro"),
+            (self.veiculo_pj, 2, Estada.DINHEIRO, "PJ, 2h, Dinheiro"),
+            (self.veiculo_pj, 7, Estada.DINHEIRO, "PJ, 7h, Dinheiro"),
+            (self.veiculo_pf, 2, Estada.PIX, "PF, 2h, PIX"),
+            (self.veiculo_pf, 7, Estada.PIX, "PF, 7h, PIX"),
+            (self.veiculo_pj, 2, Estada.PIX, "PJ, 2h, PIX"),
+            (self.veiculo_pj, 7, Estada.PIX, "PJ, 7h, PIX"),
+        ]
 
-    def test_taxa_acima_6_horas(self):
-        agora = timezone.now()
-        estada = Estada.objects.create(
-            veiculo=self.veiculo_pf,
-            vaga=self.vaga,
-            funcionario_responsavel=self.funcionario,
-            data_entrada=agora,
-            data_saida=agora + timedelta(hours=7),
-            modalidade_pagamento=Estada.CARTAO
-        )
-        valor = estada.calcular_valor_pagamento()
-        esperado = 10.0 * 7 * 1.10  # 7 horas * 10/h * +10%
-        self.assertAlmostEqual(valor, esperado, places=2)
+        for veiculo, horas, modalidade, descricao in combinacoes:
+            with self.subTest(descricao=descricao):
+                estada = Estada.objects.create(
+                    veiculo=veiculo,
+                    vaga=self.vaga,
+                    funcionario_responsavel=self.funcionario,
+                    data_entrada=agora,
+                    data_saida=agora + timedelta(hours=horas),
+                    modalidade_pagamento=modalidade
+                )
 
-    def test_taxa_pj(self):
-        agora = timezone.now()
-        estada = Estada.objects.create(
-            veiculo=self.veiculo_pj,
-            vaga=self.vaga,
-            funcionario_responsavel=self.funcionario,
-            data_entrada=agora,
-            data_saida=agora + timedelta(hours=3),
-            modalidade_pagamento=Estada.CARTAO
-        )
-        valor = estada.calcular_valor_pagamento()
-        esperado = 10.0 * 3 * 1.15  # 3 horas * 10/h * +15% PJ
-        self.assertAlmostEqual(valor, esperado, places=2)
+                # Valor base
+                base = 10.0 * horas
 
-    def test_combinacao_pix_mais_6h_mais_pj(self):
-        agora = timezone.now()
-        estada = Estada.objects.create(
-            veiculo=self.veiculo_pj,
-            vaga=self.vaga,
-            funcionario_responsavel=self.funcionario,
-            data_entrada=agora,
-            data_saida=agora + timedelta(hours=7),
-            modalidade_pagamento=Estada.PIX
-        )
-        valor = estada.calcular_valor_pagamento()
-        # Ordem: valor base * +10% (>6h) * +15% (PJ) * -10% (Pix)
-        base = 10.0 * 7
-        esperado = base * 1.10 * 1.15 * 0.9
-        self.assertAlmostEqual(valor, round(esperado, 2), places=2)
+                # Aplicar regras passo a passo
+                if horas > 6:
+                    base *= 1.10  # +10% por mais de 6h
+                if getattr(veiculo.dono, 'tipo', '') == 'J':
+                    base *= 1.15  # +15% PJ
+                if modalidade == Estada.PIX:
+                    base *= 0.90  # -10% PIX
+
+                valor_esperado = round(base, 2)
+                valor_calculado = estada.calcular_valor_pagamento()
+
+                self.assertAlmostEqual(valor_calculado, valor_esperado, places=2, msg=f"Falha na combinação: {descricao}")
