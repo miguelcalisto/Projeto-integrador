@@ -6,17 +6,22 @@ from django.utils import timezone
 from vaga.models import Vaga
 from .models import Estada
 
+from django import forms
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+from django.utils import timezone
+
+from vaga.models import Vaga
+from .models import Estada
+from veiculo.models import Veiculo  # supondo que você tenha esse model
 
 class EstadaForm(forms.ModelForm):
-
     class Meta:
         model = Estada
-        fields = ['vaga', 'funcionario_responsavel', 'veiculo']  # Excluídos: data_saida, valor_pagamento, tempo_total
+        fields = ['vaga', 'funcionario_responsavel', 'veiculo']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # Configuração do Crispy Forms
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
@@ -24,26 +29,43 @@ class EstadaForm(forms.ModelForm):
         self.helper.field_class = 'col-md-8'
         self.helper.add_input(Submit('submit', 'Salvar'))
 
-        # Se estiver editando uma estada existente, desabilita o campo vaga
+        # Vagas
         if self.instance and self.instance.pk:
-            # Deixa o campo vaga visível, mas desabilitado para não ser editável
             self.fields['vaga'].disabled = True
-            # Ajusta o queryset para exibir somente a vaga atual
             self.fields['vaga'].queryset = Vaga.objects.filter(pk=self.instance.vaga.pk)
         else:
-            # Se for criação, lista as vagas livres para escolher
             self.fields['vaga'].queryset = Vaga.objects.filter(status='livre')
+
+        # Veículos
+        veiculos_livres = Veiculo.objects.exclude(estadas__pago=False)
+        if self.instance and self.instance.pk:
+            # edição: inclui o próprio veículo + veículos livres
+            self.fields['veiculo'].queryset = veiculos_livres | Veiculo.objects.filter(pk=self.instance.veiculo.pk)
+        else:
+            # criação: só veículos livres
+            self.fields['veiculo'].queryset = veiculos_livres
 
     def clean(self):
         cleaned_data = super().clean()
         vaga = cleaned_data.get('vaga')
-
+        veiculo = cleaned_data.get('veiculo')
         estada_atual = self.instance
 
-        # Se a vaga estiver ocupada e for uma criação ou troca de vaga, levanta erro
+        # Validação de vaga ocupada
         if vaga and vaga.status == 'ocupada':
             if not estada_atual.pk or estada_atual.vaga != vaga:
                 raise forms.ValidationError(f"A vaga {vaga.numero} já está ocupada.")
+
+        # Validação de veículo com estada ativa
+        if veiculo:
+            estadas_ativas = Estada.objects.filter(veiculo=veiculo, pago=False)
+            if estada_atual.pk:
+                estadas_ativas = estadas_ativas.exclude(pk=estada_atual.pk)
+            if estadas_ativas.exists():
+                raise forms.ValidationError(
+                    f"O veículo {veiculo} já possui uma estada ativa. "
+                    f"Finalize ou pague a estada antes de criar uma nova."
+                )
 
         return cleaned_data
 
