@@ -14,6 +14,11 @@
 
     <h3 style="margin-top: 30px; color: #0d6efd;">🔖 Dados da Estada</h3>
     <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+      <tr>
+  <th style="text-align: left; padding: 8px; border: 1px solid #dee2e6;">Valor Hora:</th>
+  <td style="padding: 8px; border: 1px solid #dee2e6;">R$ {{ valor_hora|floatformat:2 }}</td>
+</tr>
+
       <tr style="background-color: #f8f9fa;">
         <th style="text-align: left; padding: 8px; border: 1px solid #dee2e6;">Data de Entrada:</th>
         <td style="padding: 8px; border: 1px solid #dee2e6;">{{ estada.data_entrada }}</td>

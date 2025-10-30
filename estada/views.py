@@ -261,13 +261,17 @@ def confirmar_pagamento(request, pk):
             subject = f'Pagamento confirmado - Estada #{estada.pk}'
             from_email = settings.DEFAULT_FROM_EMAIL
             # Aqui você pode enviar para o dono do veículo, ou um email fixo do sistema:
-            destinatarios = ['SEUEMAIL']
+            destinatarios = ['miguelcalistors@gmail.com']
 
             if hasattr(estada.veiculo, 'cliente') and estada.veiculo.cliente.email:
                 destinatarios.append(estada.veiculo.cliente.email)
             else:
                 # fallback: envia para o admin
                 destinatarios.append(settings.DEFAULT_FROM_EMAIL)
+
+            from valorpagamento.models import ValorPagamento  # ✅ importe no topo do arquivo (se ainda não tiver)
+            valor_obj = ValorPagamento.objects.first()
+            valor_hora = valor_obj.valor_hora if valor_obj else 5.00
 
             context = {
                 'estada': estada,
@@ -278,6 +282,7 @@ def confirmar_pagamento(request, pk):
                 'valor_pagamento': estada.valor_pagamento,
                 'modalidade': estada.modalidade_pagamento,
                 'data_saida': estada.data_saida,
+                'valor_hora': valor_hora,  # ✅ adiciona ao contexto
             }
 
             html_content = render_to_string('emails/pagamento_confirmado.html', context)
