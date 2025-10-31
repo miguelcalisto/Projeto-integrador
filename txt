@@ -1,1 +1,0 @@
-em cadastrar estada os veiculos na estada não podem estar disponiveis para cadastrar novamente
