@@ -42,4 +42,16 @@ python manage.py runserver
 
 ---
 
+## 🐳 Como Rodar com Docker
+
+### Baixar a imagem do Docker Hub
+
+```bash
+docker pull miguelcalisto/projeto-integrador:latest
+docker run -d -p 8000:8000 miguelcalisto/projeto-integrador
+```
+acessar em http://localhost:8000
+
+---
+
 ![print](assets/print.png)
