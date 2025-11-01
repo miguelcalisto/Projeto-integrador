@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 ---
 
-3. **Execute as migrações e inicie o servidor** 🛠️
+3. **Execute as migrações e inicie o servidor** 🛠️https://hub.docker.com/repositories/miguelcalistohttps://hub.docker.com/repositories/miguelcalisto
 
 ```bash
 python manage.py makemigrations
@@ -52,22 +52,23 @@ python manage.py createsuperuser
 
 ## 🐳 Como Rodar com [Docker](https://www.docker.com/)
 
-Baixar a imagem do [Docker Hub](https://hub.docker.com/repositories/miguelcalisto)
+Baixar a imagem do Docker Hub
 
 ```bash
 docker pull miguelcalisto/projeto-integrador:latest
 docker run -p 8000:8000 --name projeto_integrador_container miguelcalisto/projeto-integrador
 ```
-Rodar as migrations e createsuperuser no docker
+
+Rodar as **migrations** e **createsuperuser** no container
+
 ```bash
 docker exec -it projeto_integrador_container python manage.py makemigrations
 docker exec -it projeto_integrador_container python manage.py migrate
 docker exec -it projeto_integrador_container python manage.py createsuperuser
 ```
+
 acessar em http://localhost:8000
 
 ---
 
 ![print](assets/print01.png)
-
-
