@@ -64,9 +64,10 @@ docker exec -it projeto_integrador_container python manage.py makemigrations
 docker exec -it projeto_integrador_container python manage.py migrate
 docker exec -it projeto_integrador_container python manage.py createsuperuser
 ```
-acessar em https://localhost:8000
+acessar em http://localhost:8000
 
 ---
 
 ![print](assets/print01.png)
+
 
