@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 ---
 
-3. **Execute as migrações e inicie o servidor** 🛠️https://hub.docker.com/repositories/miguelcalistohttps://hub.docker.com/repositories/miguelcalisto
+3. **Execute as migrações e inicie o servidor** 🛠️
 
 ```bash
 python manage.py makemigrations
@@ -72,3 +72,4 @@ acessar em http://localhost:8000
 ---
 
 ![print](assets/print01.png)
+
