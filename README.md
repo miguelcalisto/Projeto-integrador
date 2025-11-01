@@ -56,16 +56,17 @@ Baixar a imagem do Docker Hub
 
 ```bash
 docker pull miguelcalisto/projeto-integrador:latest
-docker run -p 8000:8000 miguelcalisto/projeto-integrador
+docker run -p 8000:8000 --name projeto_integrador_container miguelcalisto/projeto-integrador
 ```
 Rodar as migrations e createsuperuser no docker
 ```bash
-docker exec -it <nome_ou_id_do_container> python manage.py makemigrations
-docker exec -it <nome_ou_id_do_container> python manage.py migrate
-docker exec -it <nome_ou_id_do_container> python manage.py createsuperuser
+docker exec -it projeto_integrador_container python manage.py makemigrations
+docker exec -it projeto_integrador_container python manage.py migrate
+docker exec -it projeto_integrador_container python manage.py createsuperuser
 ```
 acessar em https://localhost:8000
 
 ---
 
 ![print](assets/print01.png)
+
