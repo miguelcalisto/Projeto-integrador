@@ -52,7 +52,7 @@ python manage.py createsuperuser
 
 ## 🐳 Como Rodar com [Docker](https://www.docker.com/)
 
-Baixar a imagem do Docker Hub
+Baixar a imagem do [Docker Hub](https://hub.docker.com/repositories/miguelcalisto)
 
 ```bash
 docker pull miguelcalisto/projeto-integrador:latest
