@@ -27,7 +27,7 @@ python -m venv .venv
 2. **Instale as dependências** 📦
 
 ```bash
-pip install -r requeriments.txt
+pip install -r requirements.txt 
 ```
 
 ---
@@ -42,16 +42,30 @@ python manage.py runserver
 
 ---
 
-## 🐳 Como Rodar com Docker
-
-### Baixar a imagem do Docker Hub
+4. **Criar superuser/admin** 👤
 
 ```bash
-docker pull miguelcalisto/projeto-integrador:latest
-docker run -d -p 8000:8000 miguelcalisto/projeto-integrador
+python manage.py createsuperuser
 ```
-acessar em http://localhost:8000
 
 ---
 
-![print](assets/print.png)
+## 🐳 Como Rodar com [Docker](https://www.docker.com/)
+
+Baixar a imagem do Docker Hub
+
+```bash
+docker pull miguelcalisto/projeto-integrador:latest
+docker run -p 8000:8000 miguelcalisto/projeto-integrador
+```
+Rodar as migrations e createsuperuser no docker
+```bash
+docker exec -it <nome_ou_id_do_container> python manage.py makemigrations
+docker exec -it <nome_ou_id_do_container> python manage.py migrate
+docker exec -it <nome_ou_id_do_container> python manage.py createsuperuser
+```
+acessar em https://localhost:8000
+
+---
+
+![print](assets/print01.png)
