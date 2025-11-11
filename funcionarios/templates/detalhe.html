@@ -14,7 +14,9 @@
 
   <p><strong>Nome:</strong> {{ funcionario.nome }}</p>
   <p><strong>Email:</strong> {{ funcionario.email }}</p>
- <p><strong>Email:</strong> {{ funcionario.data_nascimento }}</p>
+ <p><strong>CPF:</strong> {{ funcionario.cpf }}</p>
+<p><strong>Telefone:</strong> {{ funcionario.telefone }}</p>
+
 
   <a href="{% url 'funcionarios:editar-funcionario' funcionario.pk %}" class="btn btn-warning">Editar</a>
   <a href="{% url 'funcionarios:deletar-funcionario' funcionario.pk %}" class="btn btn-danger">Deletar</a>

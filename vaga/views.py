@@ -9,10 +9,21 @@ class VagaListView(LoginRequiredMixin,ListView):
     template_name = 'listar-vagas.html'
     context_object_name = 'vagas'
 
-class VagaDetailView(LoginRequiredMixin,DetailView):
+class VagaDetailView(LoginRequiredMixin, DetailView):
     model = Vaga
     template_name = 'detalhe-vaga.html'
     context_object_name = 'vaga'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        vaga = self.get_object()
+
+        estada_ativa = None
+        if vaga.status == 'ocupada':
+            estada_ativa = Estada.objects.filter(vaga=vaga, data_saida__isnull=True).select_related('veiculo__dono').first()
+
+        context['estada_ativa'] = estada_ativa
+        return context
 
 # views.py
 from django.shortcuts import redirect

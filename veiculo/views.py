@@ -1,6 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+
+from estada.models import Estada
 from .models import Veiculo
 from .forms import VeiculoForm  # importe seu form personalizado
 
@@ -29,8 +31,17 @@ class VeiculoDeleteView(LoginRequiredMixin,DeleteView):
 
 
 from django.views.generic import DetailView
-
 class VeiculoDetailView(LoginRequiredMixin, DetailView):
     model = Veiculo
     template_name = 'detalhe_veiculo.html'
     context_object_name = 'veiculo'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        veiculo = self.get_object()
+
+        # Busca a estada ativa (sem data de saída)
+        estada_ativa = Estada.objects.filter(veiculo=veiculo, data_saida__isnull=True).select_related('vaga').first()
+
+        context['estada_ativa'] = estada_ativa
+        return context

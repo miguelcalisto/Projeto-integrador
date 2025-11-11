@@ -4,12 +4,44 @@
 {% block content %}
 <h1 class="mb-4">Detalhes da Vaga</h1>
 
-<div class="card">
+<div class="card mb-4">
     <div class="card-body">
         <h5 class="card-title">Vaga {{ vaga.numero }}</h5>
         <p class="card-text"><strong>Status:</strong> {{ vaga.get_status_display }}</p>
     </div>
 </div>
+
+{% if estada_ativa %}
+<div class="card mb-4 border-primary">
+    <div class="card-header bg-primary text-white">
+        <strong>Veículo Ocupando a Vaga</strong>
+    </div>
+    <div class="card-body">
+        <p><strong>Modelo:</strong> {{ estada_ativa.veiculo.modelo }}</p>
+        <p><strong>Placa:</strong> {{ estada_ativa.veiculo.placa }}</p>
+        <p><strong>Cor:</strong> {{ estada_ativa.veiculo.cor }}</p>
+
+        {% if estada_ativa.veiculo.dono %}
+        <hr>
+        <h5 class="card-title">Dono do Veículo</h5>
+        <p><strong>Nome:</strong> {{ estada_ativa.veiculo.dono.nome }}</p>
+        <p><strong>Email:</strong> {{ estada_ativa.veiculo.dono.email }}</p>
+        <p><strong>Telefone:</strong> {{ estada_ativa.veiculo.dono.telefone }}</p>
+        <p><strong>Tipo:</strong>
+            {% if estada_ativa.veiculo.dono.tipo == 'F' %}
+                Pessoa Física (CPF: {{ estada_ativa.veiculo.dono.cpf }})
+            {% else %}
+                Pessoa Jurídica (CNPJ: {{ estada_ativa.veiculo.dono.cnpj }})
+            {% endif %}
+        </p>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info" role="alert">
+    🚗 Nenhum veículo está ocupando esta vaga no momento.
+</div>
+{% endif %}
 
 <a href="{% url 'vaga:editar-vaga' vaga.pk %}" class="btn btn-warning mt-3">
     <i class="bi bi-pencil-square"></i> Editar
@@ -17,5 +49,7 @@
 <a href="{% url 'vaga:deletar-vaga' vaga.pk %}" class="btn btn-danger mt-3">
     <i class="bi bi-trash"></i> Excluir
 </a>
-<a href="{% url 'vaga:lista-vagas' %}" class="btn btn-secondary mt-3">Voltar</a>
+<a href="{% url 'vaga:lista-vagas' %}" class="btn btn-secondary mt-3">
+    Voltar
+</a>
 {% endblock %}
