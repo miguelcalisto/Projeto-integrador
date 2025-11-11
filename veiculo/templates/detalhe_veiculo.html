@@ -21,12 +21,11 @@
 {% if estada_ativa %}
     <div class="alert alert-success mt-3">
         ✅ Este veículo está atualmente <strong>estacionado</strong> na
-        <strong>Vaga {{ estada_ativa.vaga.numero }}</strong> ({{ estada_ativa.vaga.get_status_display }}).
+        <a href="{% url 'vaga:detalhe-vaga' estada_ativa.vaga.pk %}" class="badge bg-primary text-decoration-none">
+            Vaga {{ estada_ativa.vaga.numero }}
+        </a>
+        ({{ estada_ativa.vaga.get_status_display }}).
     </div>
-
-    <a href="{% url 'vaga:detalhe-vaga' estada_ativa.vaga.pk %}" class="btn btn-primary mt-2">
-        <i class="bi bi-eye"></i> Ver Detalhes da Vaga
-    </a>
 {% else %}
     <div class="alert alert-info mt-3">
         🚗 Este veículo <strong>não está estacionado</strong> no momento.
