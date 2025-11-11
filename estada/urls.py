@@ -5,6 +5,7 @@ from .views import (
     EstadaCreateView,
     EstadaUpdateView,
     EstadaDeleteView, confirmar_pagamento, historico_pagamentos, exportar_pagamentos_txt, exportar_pagamentos_pdf,
+    DashboardPagamentosView,
 )
 
 app_name = 'estada'  # Namespace para o app
@@ -20,5 +21,7 @@ urlpatterns = [
     path('historico-pagamentos/', historico_pagamentos, name='historico-pagamentos'),
     path('exportar-pagamentos/', exportar_pagamentos_txt, name='exportar-pagamentos'),
     path('exportar-pagamentos-pdf/', exportar_pagamentos_pdf, name='exportar-pagamentos-pdf'),
+
+    path('dashboard-pagamentos/', DashboardPagamentosView.as_view(), name='dashboard-pagamentos'),
 
 ]

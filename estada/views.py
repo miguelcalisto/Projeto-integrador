@@ -5,11 +5,13 @@ from django.contrib import messages
 
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.core.paginator import Paginator
+from django.db.models import Count, Avg, Sum
+from django.db.models.functions import TruncMonth
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from .models import Estada, PagamentoLog
 from .forms import EstadaForm, ConfirmarPagamentoForm
 from django.conf import settings
@@ -305,3 +307,64 @@ def confirmar_pagamento(request, pk):
 
     context = {'estada': estada, 'form': form}
     return render(request, 'confirmar_pagamento.html', context)
+
+
+
+import json
+
+class DashboardPagamentosView(LoginRequiredMixin, TemplateView):
+    template_name = 'dashboard_pagamentos.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pagamentos = PagamentoLog.objects.all()
+        agora = timezone.now()
+
+        # 🔹 Lucro total e do mês
+        lucro_total = pagamentos.aggregate(Sum('valor_pago'))['valor_pago__sum'] or 0
+        lucro_mes = pagamentos.filter(data_pagamento__month=agora.month, data_pagamento__year=agora.year).aggregate(Sum('valor_pago'))['valor_pago__sum'] or 0
+
+        # 🔹 Total de pagamentos
+        total_pagamentos = pagamentos.count()
+
+        # 🔹 Pagamentos por modalidade
+        modalidades = (
+            pagamentos.values('modalidade_pagamento')
+            .annotate(total=Count('id'))
+            .order_by('-total')
+        )
+
+        # 🔹 Tempo médio de permanência
+        tempo_medio = pagamentos.aggregate(Avg('tempo_total'))['tempo_total__avg']
+        tempo_medio_horas = round(tempo_medio.total_seconds() / 3600, 2) if tempo_medio else 0
+
+        # 🔹 Receita anual — soma por mês do ano atual
+        ano_atual = agora.year
+        receitas_por_mes = (
+            pagamentos.filter(data_pagamento__year=ano_atual)
+            .annotate(mes=TruncMonth('data_pagamento'))
+            .values('mes')
+            .annotate(total=Sum('valor_pago'))
+            .order_by('mes')
+        )
+
+        # Monta listas completas dos 12 meses (mesmo se algum mês não tiver dados)
+        import calendar
+        meses_labels = [calendar.month_abbr[m] for m in range(1, 13)]
+        totais = [0] * 12
+
+        for r in receitas_por_mes:
+            mes_idx = r['mes'].month - 1
+            totais[mes_idx] = float(r['total'])
+
+        context.update({
+            'lucro_total': lucro_total,
+            'lucro_mes': lucro_mes,
+            'total_pagamentos': total_pagamentos,
+            'tempo_medio_horas': tempo_medio_horas,
+            'modalidades': modalidades,
+            'ano_atual': ano_atual,
+            'meses_json': json.dumps(meses_labels),
+            'totais_json': json.dumps(totais),
+        })
+        return context

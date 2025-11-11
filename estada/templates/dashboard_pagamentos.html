@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard de Pagamentos{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">📊 Dashboard de Pagamentos</h1>
+
+<div class="row text-center mb-4">
+  <div class="col-md-3">
+    <div class="card bg-success text-white">
+      <div class="card-body">
+        <h4>💰 Lucro Total</h4>
+        <p>R$ {{ lucro_total|floatformat:2 }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-info text-white">
+      <div class="card-body">
+        <h4>📅 Lucro do Mês</h4>
+        <p>R$ {{ lucro_mes|floatformat:2 }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-primary text-white">
+      <div class="card-body">
+        <h4>🧾 Pagamentos</h4>
+        <p>{{ total_pagamentos }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-warning text-dark">
+      <div class="card-body">
+        <h4>⏱️ Tempo Médio</h4>
+        <p>{{ tempo_medio_horas }} h</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 class="mt-4">💳 Modalidades de Pagamento</h3>
+<table class="table table-bordered text-center mt-3">
+  <thead class="table-light">
+    <tr>
+      <th>Tipo</th>
+      <th>Quantidade</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in modalidades %}
+      <tr>
+        <td>{{ m.modalidade_pagamento|title }}</td>
+        <td>{{ m.total }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="2">Nenhum pagamento registrado.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3 class="mt-5 text-center">📈 Receita Anual</h3>
+<canvas id="graficoReceita" width="600" height="250"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('graficoReceita').getContext('2d');
+const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ meses_json|safe }},
+        datasets: [{
+            label: 'Receita (R$)',
+            data: {{ totais_json|safe }},
+            borderColor: '#007bff',
+            backgroundColor: 'rgba(0, 123, 255, 0.2)',
+            fill: true,
+            tension: 0.3
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+{% endblock %}
