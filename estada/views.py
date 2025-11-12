@@ -263,7 +263,7 @@ def confirmar_pagamento(request, pk):
             subject = f'Pagamento confirmado - Estada #{estada.pk}'
             from_email = settings.DEFAULT_FROM_EMAIL
             # Aqui você pode enviar para o dono do veículo, ou um email fixo do sistema:
-            destinatarios = ['@gmail.com']
+            destinatarios = ['miguelcalistors@gmail.com']
 
             if hasattr(estada.veiculo, 'cliente') and estada.veiculo.cliente.email:
                 destinatarios.append(estada.veiculo.cliente.email)

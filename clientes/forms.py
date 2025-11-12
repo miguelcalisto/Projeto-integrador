@@ -4,7 +4,7 @@ from .models import Cliente
 class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
-        fields = '__all__'  # ou liste os campos que quiser
+        fields = '__all__'
 
         widgets = {
             'nome': forms.TextInput(attrs={'class': 'form-control'}),
