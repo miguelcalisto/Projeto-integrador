@@ -113,32 +113,33 @@
 
             </ul>
 
-            <!-- Botão para alternar tema -->
-            <button id="toggleThemeBtn" class="btn btn-outline-secondary me-2">
-                <i class="bi bi-moon-stars-fill"></i>
-                Tema Escuro
-            </button>
 
-            <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-danger">Sair</button>
-            </form>
+<div class="d-flex align-items-center ms-auto">
+    {% if request.user.is_superuser %}
+        <span class="badge bg-primary me-3">Admin</span>
+    {% else %}
+        <span class="badge bg-secondary me-3">Funcionário</span>
+    {% endif %}
 
+    <!-- Botão para alternar tema -->
+    <button id="toggleThemeBtn" class="btn btn-outline-secondary me-2">
+        <i class="bi bi-moon-stars-fill"></i>
+        Tema Escuro
+    </button>
 
-  <li class="nav-item"  style="list-style: none;">
-  <a class="nav-link btn btn-outline-primary text-white mx-3 d-flex align-items-center"
-     href="{% url 'admin:index' %}"
-     style="
-       background-color: #0078ff;
-       font-weight: 700;
-       border-radius: 10px;
-       font-size: 1.25rem;
-       padding: 3px 14px;
-       border-width: 2px;
-       ">
-    <i class="bi bi-shield-lock-fill me-2"></i> Admin
-  </a>
-</li>
+    <!-- Botão logout -->
+    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger">Sair</button>
+    </form>
+
+    <!-- Link Admin -->
+    <a class="nav-link btn btn-outline-primary text-white mx-3 d-flex align-items-center"
+       href="{% url 'admin:index' %}"
+       style="background-color: #0078ff; font-weight: 700; border-radius: 10px; font-size: 1.25rem; padding: 3px 14px; border-width: 2px;">
+        <i class="bi bi-shield-lock-fill me-2"></i> Admin
+    </a>
+</div>
 
 
 

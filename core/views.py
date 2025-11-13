@@ -13,3 +13,9 @@ from django.views.decorators.cache import never_cache
 @login_required
 def index(request):
     return render(request, 'index.html')
+
+
+from django.shortcuts import render
+
+def acesso_negado(request):
+    return render(request, 'acesso_negado.html', status=403)

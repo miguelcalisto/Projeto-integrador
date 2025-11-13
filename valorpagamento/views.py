@@ -1,11 +1,24 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import TemplateView, UpdateView
 from django.urls import reverse_lazy
 from .models import ValorPagamento
 from django.contrib import messages
+class SuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    login_url = reverse_lazy('login')
 
+    def test_func(self):
+        # Apenas superusuário pode acessar
+        return self.request.user.is_superuser
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            # Usuário logado mas não é superuser → volta pro início
+            return redirect('acesso_negado')
+        # Usuário não logado → vai pro login
+        return redirect('login')
 
 # ✅ Cria o registro automaticamente, se ainda não existir
-class ValorHoraView(UpdateView):
+class ValorHoraView(SuperuserRequiredMixin,UpdateView):
     model = ValorPagamento
     fields = ['valor_hora']
     template_name = 'valorhora.html'
