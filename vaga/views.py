@@ -89,41 +89,41 @@ class VagaDeleteView(LoginRequiredMixin,DeleteView):
 from estada.models import Estada
 
 # # dashcborad
-# class DashboardView(LoginRequiredMixin, TemplateView):
-#     template_name = 'dashboard.html'
+class DashboardView( LoginRequiredMixin,TemplateView):
+    template_name = 'dashboard.html'
 
 
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         vagas = Vaga.objects.all().order_by('numero')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        vagas = Vaga.objects.all().order_by('numero')
 
 
-#         vagas_status = []
-#         # lista vazia 
-#         for vaga in vagas:
-#             veiculo_info = None
+        vagas_status = []
+        # lista vazia 
+        for vaga in vagas:
+            veiculo_info = None
 
-#             if vaga.status == 'ocupada':
-#                 estada_ativa = Estada.objects.filter(vaga=vaga, data_saida__isnull=True).select_related('veiculo').first()
+            if vaga.status == 'ocupada':
+                estada_ativa = Estada.objects.filter(vaga=vaga, data_saida__isnull=True).select_related('veiculo').first()
 
-#                 if estada_ativa and estada_ativa.veiculo:
-#                     # dicionário 
-#                     veiculo_info = {
+                if estada_ativa and estada_ativa.veiculo:
+                    # dicionário 
+                    veiculo_info = {
 
-#                         "modelo": estada_ativa.veiculo.modelo,
-#                         "placa": estada_ativa.veiculo.placa,
-#                     }
+                        "modelo": estada_ativa.veiculo.modelo,
+                        "placa": estada_ativa.veiculo.placa,
+                    }
 
-#             vagas_status.append({
-#                 "numero": vaga.numero,
-#                 "status": vaga.status,
-#                 "veiculo": veiculo_info
-#             })
+            vagas_status.append({
+                "numero": vaga.numero,
+                "status": vaga.status,
+                "veiculo": veiculo_info
+            })
 
            
-#         context['vagas_status'] = vagas_status
+        context['vagas_status'] = vagas_status
 
-#         return context
+        return context
 
 
 

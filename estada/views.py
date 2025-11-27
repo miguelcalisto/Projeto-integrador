@@ -204,6 +204,8 @@ class PagamentosGraficoView(ListView):
 
     def get_queryset(self):
         return PagamentoLog.objects.all().order_by('-data_pagamento')
+    
+    
 
 
 

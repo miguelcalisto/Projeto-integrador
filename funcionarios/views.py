@@ -12,14 +12,14 @@ class FuncionarioListView(LoginRequiredMixin, PermissionRequiredMixin,ListView):
     model = Funcionario
     template_name = 'listar.html'
     context_object_name = 'funcionarios'
-    permission_required = 'funcionarios.view_funcionario'
+    permission_required = 'funcionarios.view_Funcionario'
     raise_exception = True  
 
 class FuncionarioDetailView(DetailView):
     model = Funcionario
     template_name = 'detalhe.html'
     context_object_name = 'funcionario'
-    permission_required = 'funcionarios.view_funcionario'
+    permission_required = 'funcionarios.view_Funcionario'
     raise_exception = True
 
 class FuncionarioCreateView(CreateView):
@@ -27,7 +27,7 @@ class FuncionarioCreateView(CreateView):
     form_class = FuncionarioForm
     template_name = 'criar.html'
     success_url = reverse_lazy('funcionarios:lista-funcionarios')
-    permission_required = 'funcionarios.add_funcionario'
+    permission_required = 'funcionarios.add_Funcionario'
     raise_exception = True
 
 
@@ -36,7 +36,7 @@ class FuncionarioUpdateView(UpdateView):
     form_class = FuncionarioForm
     template_name = 'editar.html'
     success_url = reverse_lazy('funcionarios:lista-funcionarios')
-    permission_required = 'funcionarios.change_funcionario'
+    permission_required = 'funcionarios.change_Funcionario'
     raise_exception = True
 
 
@@ -44,6 +44,6 @@ class FuncionarioDeleteView(DeleteView):
     model = Funcionario
     template_name = 'deletar.html'
     success_url = reverse_lazy('funcionarios:lista-funcionarios')
-    permission_required = 'funcionarios.delete_funcionario'
+    permission_required = 'funcionarios.delete_Funcionario'
     raise_exception = True
 

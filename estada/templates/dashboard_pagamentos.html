@@ -1,7 +1,32 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
+
+<style>
+#dashboard-wrapper {
+    color-scheme: light !important;
+}
+
+#dashboard-wrapper, 
+#dashboard-wrapper * {
+    --bs-body-bg: #ffffff !important;
+    --bs-body-color: #212529 !important;
+    --bs-card-bg: #ffffff !important;
+    --bs-card-color: #212529 !important;
+
+    --bs-table-bg: #ffffff !important;
+    --bs-table-striped-bg: #f8f9fa !important;
+    --bs-table-hover-bg: #f1f1f1 !important;
+
+    --bs-success-bg-subtle: #d1e7dd !important;
+
+    background-color: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+}
+</style>
+
+<div id="dashboard-wrapper">
+
 <section class="section">
     <div class="container">
         {% if pagamentos %}
@@ -46,7 +71,9 @@
 
         <div class="col-12 mt-5">
             <canvas id="GraficoPagamentos" width="800" height="400"></canvas>
+
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
             <script>
                 const pagamentos_data = [
                     {% for p in pagamentos %}
@@ -63,6 +90,7 @@
                 ];
 
                 const ctx = document.getElementById('GraficoPagamentos').getContext('2d');
+
                 const myChart = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -109,4 +137,7 @@
         </div>
     </div>
 </section>
+
+</div> 
+
 {% endblock %}
