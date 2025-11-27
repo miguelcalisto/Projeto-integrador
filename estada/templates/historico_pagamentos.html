@@ -74,10 +74,14 @@
 </nav>
 {% endif %}
 
-{% comment %}
-<!-- <a href="{% url 'estada:exportar_pagamentos_txt' %}" class="btn btn-outline-primary mb-3" download>
+
+<a href="{% url 'estada:exportar_pagamentos_txt' %}" class="btn btn-outline-primary mb-3" download>
   📄 Baixar Relatório TXT
-</a> -->
-{% endcomment %}
+</a>
+
+<a href="{% url 'estada:exportar-pagamentos-pdf' %}" class="btn btn-outline-danger mb-3" download>
+  <i class="bi bi-file-earmark-pdf-fill"></i> Baixar Relatório PDF
+</a>
+
 
 {% endblock %}

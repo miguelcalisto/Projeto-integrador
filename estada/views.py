@@ -92,31 +92,31 @@ from django.http import HttpResponse
 from django.utils import timezone
 from .models import PagamentoLog
 
-# class ExportarPagamentosTxtView(View):
-#     def get(self, request, *args, **kwargs):
-#         pagamentos = PagamentoLog.objects.all().order_by('-data_pagamento')
+class ExportarPagamentosTxtView(View):
+    def get(self, request, *args, **kwargs):
+        pagamentos = PagamentoLog.objects.all().order_by('-data_pagamento')
 
-#         linhas = []
-#         for idx, p in enumerate(pagamentos, start=1):
-#             data_local = timezone.localtime(p.data_pagamento)  
-#             linha = (
-#                 f"{idx} - "
-#                 f"Veículo: {p.veiculo} | "
-#                 f"Vaga: {p.vaga} | "
-#                 f"Funcionário: {p.funcionario} | "
-#                 f"Data: {data_local.strftime('%d/%m/%Y %H:%M')} | "
-#                 f"Tempo: {p.tempo_total} | "
-#                 f"Valor: R$ {p.valor_pago} | "
-#                 f"Modalidade: {p.modalidade_pagamento}"
-#             )
-#             linhas.append(linha)
-#             linhas.append("")  
+        linhas = []
+        for idx, p in enumerate(pagamentos, start=1):
+            data_local = timezone.localtime(p.data_pagamento)  
+            linha = (
+                f"{idx} - "
+                f"Veículo: {p.veiculo} | "
+                f"Vaga: {p.vaga} | "
+                f"Funcionário: {p.funcionario} | "
+                f"Data: {data_local.strftime('%d/%m/%Y %H:%M')} | "
+                f"Tempo: {p.tempo_total} | "
+                f"Valor: R$ {p.valor_pago} | "
+                f"Modalidade: {p.modalidade_pagamento}"
+            )
+            linhas.append(linha)
+            linhas.append("")  
 
-#         conteudo = "\n".join(linhas)
+        conteudo = "\n".join(linhas)
 
-#         response = HttpResponse(conteudo, content_type='text/plain')
-#         response['Content-Disposition'] = 'attachment; filename=relatorio_pagamentos.txt'
-#         return response
+        response = HttpResponse(conteudo, content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=relatorio_pagamentos.txt'
+        return response
 
 
 class ConfirmarPagamentoView(LoginRequiredMixin, UpdateView):
@@ -204,3 +204,25 @@ class PagamentosGraficoView(ListView):
 
     def get_queryset(self):
         return PagamentoLog.objects.all().order_by('-data_pagamento')
+
+
+
+from weasyprint import HTML
+
+class ExportarPagamentosPdfView(View):
+    template_name = 'pagamentos_pdf.html'
+
+    def get(self, request, *args, **kwargs):
+        pagamentos = PagamentoLog.objects.all().order_by('-data_pagamento')
+
+        html_string = render_to_string(self.template_name, {
+            'pagamentos': pagamentos,
+            'gerado_em': timezone.now(),
+        })
+
+        pdf_file = HTML(string=html_string).write_pdf()
+
+        response = HttpResponse(pdf_file, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="relatorio_pagamentos.pdf"'
+
+        return response

@@ -6,6 +6,8 @@ from stdimage import StdImageField
 class Funcionario(Pessoa):
     tipo = models.CharField(max_length=1, default='F', editable=False)  
     data_nascimento = models.DateField()
+   
+   
     foto = StdImageField(
         upload_to='funcionarios_fotos/',
         variations={

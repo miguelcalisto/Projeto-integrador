@@ -6,6 +6,8 @@ from .views import (
     EstadaCreateView,
     EstadaUpdateView,
     EstadaDeleteView,
+    ExportarPagamentosPdfView,
+    ExportarPagamentosTxtView,
     #ExportarPagamentosTxtView,
     HistoricoPagamentosView,PagamentosGraficoView
 )
@@ -27,9 +29,11 @@ urlpatterns = [
     path('historico/', HistoricoPagamentosView.as_view(), name='historico-pagamentos'),
 
 
-    # path('exportar-pagamentos-txt/', ExportarPagamentosTxtView.as_view(), name='exportar_pagamentos_txt'),
+    path('exportar-pagamentos-txt/', ExportarPagamentosTxtView.as_view(), name='exportar_pagamentos_txt'),
 
 
     path('dashboard-pagamentos/', PagamentosGraficoView.as_view(), name='dashboard-pagamentos'),
+
+    path('exportar-pagamentos/pdf/',ExportarPagamentosPdfView.as_view(),name='exportar-pagamentos-pdf'),
 
 ]

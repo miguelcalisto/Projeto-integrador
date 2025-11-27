@@ -2,6 +2,9 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=django,python
 
 ### Django ###
+
+probelmas.txt
+./probelmas.txt
 *.log
 *.pot
 *.pyc
