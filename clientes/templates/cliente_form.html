@@ -11,78 +11,45 @@
   {% csrf_token %}
   {{ form.non_field_errors }}
 
-  <div class="mb-3">
-    <label class="form-label">{{ form.nome.label }}</label>
-    {{ form.nome }}
-    {{ form.nome.errors }}
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label">{{ form.email.label }}</label>
-    {{ form.email }}
-    {{ form.email.errors }}
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label">{{ form.telefone.label }}</label>
-    {{ form.telefone }}
-    {{ form.telefone.errors }}
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label">{{ form.tipo.label }}</label>
-    {{ form.tipo }}
-    {{ form.tipo.errors }}
-  </div>
-
-  <!-- Campo CPF (visível apenas para PF) -->
-  <div class="mb-3" id="cpf-field">
-    <label class="form-label">{{ form.cpf.label }}</label>
-    {{ form.cpf }}
-    {{ form.cpf.errors }}
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label">{{ form.data_nascimento.label }}</label>
-    {{ form.data_nascimento }}
-    {{ form.data_nascimento.errors }}
-  </div>
-
-  <!-- Campo CNPJ (visível apenas para PJ) -->
-  <div class="mb-3" id="cnpj-field">
-    <label class="form-label">{{ form.cnpj.label }}</label>
-    {{ form.cnpj }}
-    {{ form.cnpj.errors }}
-  </div>
+  {% for field in form %}
+      <div class="mb-3" id="field-{{ field.name }}">
+          {{ field.label_tag }}
+          {{ field }}
+          {{ field.errors }}
+      </div>
+  {% endfor %}
 
   <button type="submit" class="btn btn-primary">Salvar</button>
   <a href="{% url 'cliente_list' %}" class="btn btn-secondary ms-2">Cancelar</a>
 </form>
 
-<!-- JavaScript para ocultar/mostrar campos -->
+
 <script>
-  function toggleCpfCnpj() {
-    const tipo = document.getElementById('id_tipo');
-    const cpfField = document.getElementById('cpf-field');
-    const cnpjField = document.getElementById('cnpj-field');
+function toggleCpfCnpj() {
+    const tipo = document.getElementById('id_tipo').value;
 
-    if (tipo.value === 'F') {
-      cpfField.style.display = 'block';
-      cnpjField.style.display = 'none';
-    } else if (tipo.value === 'J') {
-      cpfField.style.display = 'none';
-      cnpjField.style.display = 'block';
+    // CPF
+    document.getElementById('field-cpf').style.display = tipo === 'F' ? 'block' : 'none';
+    
+    // CNPJ
+    document.getElementById('field-cnpj').style.display = tipo === 'J' ? 'block' : 'none';
+    
+    const dataLabel = document.querySelector('#field-data_nascimento label');
+    if (tipo === 'F') {
+        document.getElementById('field-data_nascimento').style.display = 'block';
+        dataLabel.textContent = 'Data de Nascimento';
+    } else if (tipo === 'J') {
+        document.getElementById('field-data_nascimento').style.display = 'block';
+        dataLabel.textContent = 'Data de Criação';
     } else {
-      cpfField.style.display = 'none';
-      cnpjField.style.display = 'none';
+        document.getElementById('field-data_nascimento').style.display = 'none';
     }
-  }
+}
 
-  document.addEventListener('DOMContentLoaded', function () {
-    toggleCpfCnpj(); // Mostra/esconde ao carregar
-
-    // Aplica a função quando o campo muda
+document.addEventListener('DOMContentLoaded', function () {
+    toggleCpfCnpj();
     document.getElementById('id_tipo').addEventListener('change', toggleCpfCnpj);
-  });
+});
 </script>
+
 {% endblock %}

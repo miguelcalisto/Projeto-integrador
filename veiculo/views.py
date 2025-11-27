@@ -4,7 +4,10 @@ from django.urls import reverse_lazy
 
 from estada.models import Estada
 from .models import Veiculo
-from .forms import VeiculoForm  # importe seu form personalizado
+from .forms import VeiculoForm  
+
+
+
 
 class VeiculoListView(LoginRequiredMixin,ListView):
     model = Veiculo
@@ -13,14 +16,14 @@ class VeiculoListView(LoginRequiredMixin,ListView):
 
 class VeiculoCreateView(LoginRequiredMixin,CreateView):
     model = Veiculo
-    form_class = VeiculoForm  # usa o form personalizado
-    template_name = 'form.html'
+    form_class = VeiculoForm  #
+    template_name = 'veiculo-criar.html'
     success_url = reverse_lazy('lista_veiculos')
 
 class VeiculoUpdateView(LoginRequiredMixin,UpdateView):
     model = Veiculo
-    form_class = VeiculoForm  # também aqui
-    template_name = 'form.html'
+    form_class = VeiculoForm  
+    template_name = 'veiculo-editar.html'
     success_url = reverse_lazy('lista_veiculos')
 
 class VeiculoDeleteView(LoginRequiredMixin,DeleteView):
@@ -40,7 +43,6 @@ class VeiculoDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         veiculo = self.get_object()
 
-        # Busca a estada ativa (sem data de saída)
         estada_ativa = Estada.objects.filter(veiculo=veiculo, data_saida__isnull=True).select_related('vaga').first()
 
         context['estada_ativa'] = estada_ativa

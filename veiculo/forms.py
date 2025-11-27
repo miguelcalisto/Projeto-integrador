@@ -15,5 +15,4 @@ class VeiculoForm(forms.ModelForm):
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-2'
         self.helper.field_class = 'col-md-8'
-        # Você pode deixar o botão aqui, ou colocar no template
-        self.helper.add_input(Submit('submit', 'Salvar'))
+        

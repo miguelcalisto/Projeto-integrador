@@ -6,21 +6,17 @@ from .models import Vaga
 class VagaForm(forms.ModelForm):
     class Meta:
         model = Vaga
-        fields = ['status']  # só o campo editável
+       
+        fields = ['status']  
+      
+        
 
     def __init__(self, *args, **kwargs):
+        
         super().__init__(*args, **kwargs)
+        
+       
 
-        # Se for edição (ou seja, a vaga já existe), mostrar o campo 'numero' como readonly
-        if self.instance and self.instance.pk:
-            self.fields['numero'] = forms.IntegerField(
-                initial=self.instance.numero,
-                label="Número da Vaga",
-                disabled=True,     # torna o campo somente leitura
-                required=False,
-            )
-
-        # Crispy Forms config
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'

@@ -16,16 +16,17 @@ class Estada(models.Model):
         (CARTAO, 'Cartão'),
         (PIX, 'Pix'),
     ]
-
+  
     data_entrada = models.DateTimeField(auto_now_add=True)
-    # data_entrada = models.DateTimeField()
 
 
     data_saida = models.DateTimeField(null=True, blank=True)
     vaga = models.ForeignKey(Vaga, on_delete=models.SET_NULL, null=True, blank=True)
     valor_pagamento = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     modalidade_pagamento = models.CharField(max_length=10, choices=MODALIDADE_PAGAMENTO_CHOICES, null=True, blank=True)
+    # fk funcionairo
     funcionario_responsavel = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True)
+    # fk veiculo
     veiculo = models.ForeignKey(Veiculo, on_delete=models.CASCADE, related_name='estadas')
     tempo_total = models.DurationField(null=True, blank=True)
     pago = models.BooleanField(default=False)
@@ -47,41 +48,31 @@ class Estada(models.Model):
         if not tempo_total:
             return 0.00
 
-        # Valor base por hora
         try:
             taxa = ValorPagamento.objects.first().valor_hora
         except AttributeError:
-            taxa = 5.00  # valor padrão se não existir no banco
+            taxa = 5.00  
 
         horas = tempo_total.total_seconds() / 3600
         valor = horas * float(taxa)
 
-        # -------------------------------
-        # 💼 Regras de negócio adicionais
-        # -------------------------------
+        
 
-        # 1️⃣ Desconto de 10% para pagamentos via Pix
         if self.modalidade_pagamento == self.PIX:
             valor *= 0.90
 
-        # 2️⃣ Se a estada durar mais de 6 horas → taxa extra de 10%
         if horas > 6:
             valor *= 1.10
 
-        # 3️⃣ Se o veículo pertence a pessoa jurídica → taxa adicional de 15%
-        try:
-            # if hasattr(self.veiculo, 'dono') and self.veiculo.dono and self.veiculo.dono.tipo == 'J':
-            #     valor *= 1.15
-            if self.veiculo and getattr(self.veiculo.dono, 'tipo', '') == 'J':
-                valor *= 1.15
+    
+        if self.veiculo and self.veiculo.dono and self.veiculo.dono.tipo == 'J':
+            valor *= 1.15
 
-        except Exception:
-            pass
 
-        # Arredonda o valor final
         return round(valor, 2)
 
     def delete(self, *args, **kwargs):
+        # Antes de apagar a estada, marca a vaga como livre.
         vaga = self.vaga
         if vaga:
             vaga.status = 'livre'

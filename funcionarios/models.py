@@ -1,12 +1,10 @@
 from django.db import models
-from clientes.models import Pessoa  # Importa a classe abstrata Pessoa de Clientes
+from clientes.models import Pessoa  
 from stdimage import StdImageField
 
 
 class Funcionario(Pessoa):
-    tipo = models.CharField(max_length=1, default='F', editable=False)  # Fixando Pessoa Física não sei
-
-    cpf = models.CharField(max_length=14)
+    tipo = models.CharField(max_length=1, default='F', editable=False)  
     data_nascimento = models.DateField()
     foto = StdImageField(
         upload_to='funcionarios_fotos/',

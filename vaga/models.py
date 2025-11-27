@@ -1,8 +1,12 @@
 from django.db import models
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.urls import reverse_lazy
+
+
 
 
 class Vaga(models.Model):
-    numero = models.IntegerField(unique=True, blank=True, null=True)
+    numero = models.IntegerField(unique=True,  editable=False, null=True)
 
     STATUS_CHOICES = [
         ('livre', 'Livre'),
@@ -15,23 +19,22 @@ class Vaga(models.Model):
         default='livre'
     )
 
-    def verificar_disponibilidade(self):
-        return self.status == 'livre'
+ 
 
     def save(self, *args, **kwargs):
-        if self.numero is None:
-            # Pega o maior número existente e incrementa
+     
+
+   
+        if not self.numero:
             ultimo_numero = Vaga.objects.aggregate(models.Max('numero'))['numero__max']
             self.numero = 1 if ultimo_numero is None else ultimo_numero + 1
+
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Vaga {self.numero} - {self.get_status_display()}"
 
 
-# models.py
-class ConfiguracaoVaga(models.Model):
-    limite_maximo = models.PositiveIntegerField(default=10)
 
-    def __str__(self):
-        return f"Limite de vagas: {self.limite_maximo}"
+
+

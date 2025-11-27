@@ -1,7 +1,8 @@
 from django.urls import path
+
 from .views import (
     VagaListView, VagaDetailView,
-    VagaCreateView, VagaUpdateView, VagaDeleteView, DashboardView
+    VagaCreateView, VagaUpdateView, VagaDeleteView, #DashboardView
 )
 
 app_name = 'vaga'
@@ -12,5 +13,7 @@ urlpatterns = [
     path('criar/', VagaCreateView.as_view(), name='criar-vaga'),
     path('<int:pk>/editar/', VagaUpdateView.as_view(), name='editar-vaga'),
     path('<int:pk>/deletar/', VagaDeleteView.as_view(), name='deletar-vaga'),
-    path('dashboard/', DashboardView.as_view(), name='dashboard'),
+
+    # path('dashboard/', DashboardView.as_view(), name='dashboard'),
+
 ]

@@ -1,14 +1,16 @@
 from django.urls import path
 from .views import (
+    ConfirmarPagamentoView,
     EstadaListView,
     EstadaDetailView,
     EstadaCreateView,
     EstadaUpdateView,
-    EstadaDeleteView, confirmar_pagamento, historico_pagamentos, exportar_pagamentos_txt, exportar_pagamentos_pdf,
-    DashboardPagamentosView,
+    EstadaDeleteView,
+    #ExportarPagamentosTxtView,
+    HistoricoPagamentosView,PagamentosGraficoView
 )
 
-app_name = 'estada'  # Namespace para o app
+app_name = 'estada'  
 
 urlpatterns = [
     path('', EstadaListView.as_view(), name='lista-estadas'),
@@ -16,12 +18,18 @@ urlpatterns = [
     path('criar/', EstadaCreateView.as_view(), name='criar-estada'),
     path('editar/<int:pk>/', EstadaUpdateView.as_view(), name='editar-estada'),
     path('deletar/<int:pk>/', EstadaDeleteView.as_view(), name='deletar-estada'),
-    path('<int:pk>/confirmar-pagamento/', confirmar_pagamento, name='confirmar-pagamento'),
-    path('estada/<int:pk>/confirmar-pagamento/', confirmar_pagamento, name='confirmar_pagamento'),
-    path('historico-pagamentos/', historico_pagamentos, name='historico-pagamentos'),
-    path('exportar-pagamentos/', exportar_pagamentos_txt, name='exportar-pagamentos'),
-    path('exportar-pagamentos-pdf/', exportar_pagamentos_pdf, name='exportar-pagamentos-pdf'),
 
-    path('dashboard-pagamentos/', DashboardPagamentosView.as_view(), name='dashboard-pagamentos'),
+    path('confirmar/<int:pk>/', ConfirmarPagamentoView.as_view(), name='confirmar-pagamento'),
+
+
+   
+    
+    path('historico/', HistoricoPagamentosView.as_view(), name='historico-pagamentos'),
+
+
+    # path('exportar-pagamentos-txt/', ExportarPagamentosTxtView.as_view(), name='exportar_pagamentos_txt'),
+
+
+    path('dashboard-pagamentos/', PagamentosGraficoView.as_view(), name='dashboard-pagamentos'),
 
 ]

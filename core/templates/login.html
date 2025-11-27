@@ -6,26 +6,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login</title>
 
-  <!-- Bootstrap 5 CSS via CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
   <style>
     body {
-      /* Usa a imagem do static como background */
       background-image: url("{% static 'istockphoto-658789952-612x612.jpg' %}");
-      background-size: cover;      /* cobre toda a tela */
-      background-position: center; /* centraliza */
+      background-size: cover;      
+      background-position: center; 
       background-repeat: no-repeat;
-      height: 100vh;               /* altura total da tela */
+      height: 100vh;              
       display: flex;
       justify-content: center;
       align-items: center;
-      /* opcional: coloca um filtro escuro para melhorar a legibilidade */
       position: relative;
       color: white;
     }
 
-    /* Fundo escuro semi-transparente atrás do card */
     .card {
       background-color: rgba(0, 0, 0, 0.6) !important;
     }
@@ -48,7 +44,7 @@
               <input type="text" name="username" autofocus required class="form-control" id="id_username" />
               {% if form.username.errors %}
                 <div class="text-danger mt-1">
-                  {{ form.username.errors|striptags }}
+                  {{ form.username.errors }}
                 </div>
               {% endif %}
             </div>
@@ -58,7 +54,7 @@
               <input type="password" name="password" required class="form-control" id="id_password" />
               {% if form.password.errors %}
                 <div class="text-danger mt-1">
-                  {{ form.password.errors|striptags }}
+                  {{ form.password.errors }}
                 </div>
               {% endif %}
             </div>
@@ -68,12 +64,11 @@
 
         </div>
       </div>
-      <p class="text-center mt-3 text-light">&copy; {{ now|date:"Y" }}Projeto</p>
+      
     </div>
   </div>
 </div>
 
-<!-- Bootstrap 5 JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

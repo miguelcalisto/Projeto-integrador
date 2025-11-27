@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Acesso Negado{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center">
+    <div class="card text-center shadow" style="max-width: 500px;">
+        <div class="card-body">
+            <h1 class="display-4 text-danger">403</h1>
+            <h3 class="card-title mb-3">Acesso Negado</h3>
+            <p class="card-text">Desculpe, você não tem permissão para acessar esta página.</p>
+            <a href="{% url 'index' %}" class="btn btn-primary mt-3">Voltar para a página inicial</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block footer %}
+{% endblock %}
