@@ -154,7 +154,7 @@ class ConfirmarPagamentoView(LoginRequiredMixin, UpdateView):
         return redirect('estada:lista-estadas')
 # func email
     def enviar_email(self, estada):
-        destinatarios = ['miguelcalistors@gmail.com']
+        destinatarios = ['@gmail.com']
 
         if estada.veiculo.dono and estada.veiculo.dono.email:
             destinatarios.append(estada.veiculo.dono.email)
