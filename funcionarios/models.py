@@ -6,6 +6,8 @@ from stdimage import StdImageField
 class Funcionario(Pessoa):
     tipo = models.CharField(max_length=1, default='F', editable=False)  
     data_nascimento = models.DateField()
+
+    cpf_func = models.CharField(max_length=14, blank=True, null=True, verbose_name="CPF do Funcionário")
    
    
     foto = StdImageField(
