@@ -14,6 +14,8 @@ from django.views.generic import UpdateView
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
+from vaga.models import Vaga
+
 
 class ConfiguracaoVagaView(PermissionRequiredMixin, LoginRequiredMixin,UpdateView):
     model = ConfiguracaoVaga
@@ -29,12 +31,37 @@ class ConfiguracaoVagaView(PermissionRequiredMixin, LoginRequiredMixin,UpdateVie
     def get_object(self):
         obj, created = ConfiguracaoVaga.objects.get_or_create(id=1, defaults={'limite_maximo': 10})
         return obj
+    
+
 
     def form_valid(self, form):
+        response = super().form_valid(form)
 
-        limite_maximo = form.instance.limite_maximo
+        limite = form.instance.limite_maximo
+        total = Vaga.objects.count()
+        
+        messages.success(self.request, f"Limite definido para {limite} vagas.")
 
-        messages.success(self.request, f'Limite máximo  {limite_maximo}  atualizado com sucesso!')
-       
+        if total < limite:
+            criar = limite - total
 
-        return super().form_valid(form)
+            for _ in range(criar):
+                Vaga.objects.create()
+
+            messages.success(self.request, f"{criar} vagas criadas automaticamente!")
+
+        elif total > limite:
+                remover = total - limite
+
+                excedentes = Vaga.objects.filter(status='livre').order_by('-numero')[:remover]
+                excedentes_list = list(excedentes) 
+
+                qtd = len(excedentes_list)
+
+                for vaga in excedentes_list:
+                    vaga.delete()
+
+                messages.success(self.request, f"{qtd} vagas removidas automaticamente!")
+         
+        return response
+
