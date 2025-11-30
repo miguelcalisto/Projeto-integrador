@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from .models import Vaga
 from .forms import VagaForm
+from django.contrib import messages
 
 
 
@@ -67,24 +68,24 @@ class VagaUpdateView(LoginRequiredMixin,UpdateView):
     success_url = reverse_lazy('vaga:lista-vagas')
 
 
-class VagaDeleteView(LoginRequiredMixin,DeleteView):
+class VagaDeleteView(LoginRequiredMixin, DeleteView):
     model = Vaga
     template_name = 'deletar-vaga.html'
     success_url = reverse_lazy('vaga:lista-vagas')
 
+    def dispatch(self, request, *args, **kwargs):
+        vaga = self.get_object()
 
-# class DashboardView(LoginRequiredMixin, TemplateView):
-#     template_name = 'dashboard.html'
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         # Exemplo: Contagem de vagas por status
-#         vagas_livre = Vaga.objects.filter(status='livre').count()
-#         vagas_ocupada = Vaga.objects.filter(status='ocupada').count()
-#
-#         context['vagas_livre'] = vagas_livre
-#         context['vagas_ocupada'] = vagas_ocupada
-#         return context
+        if vaga.status == 'ocupada':
+            messages.warning(request, "Não é possível deletar uma vaga ocupada.")
+            return redirect('vaga:lista-vagas')
+
+        estada_ativa = Estada.objects.filter(vaga=vaga, data_saida__isnull=True).exists()
+        if estada_ativa:
+            messages.warning(request, "Esta vaga está associada a um veículo e não pode ser deletada.")
+            return redirect('vaga:lista-vagas')
+
+        return super().dispatch(request, *args, **kwargs)
 
 from estada.models import Estada
 
