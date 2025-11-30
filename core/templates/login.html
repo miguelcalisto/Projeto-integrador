@@ -4,21 +4,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login</title>
+  <title>{% if titulo %}{{ titulo }}{% else %}Login{% endif %}</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
   <style>
     body {
       background-image: url("{% static 'istockphoto-658789952-612x612.jpg' %}");
-      background-size: cover;      
-      background-position: center; 
+      background-size: cover;
+      background-position: center;
       background-repeat: no-repeat;
-      height: 100vh;              
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      position: relative;
       color: white;
     }
 
@@ -33,38 +32,73 @@
   <div class="row justify-content-center">
     <div class="col-12 col-md-6 col-lg-4">
       <div class="card shadow-sm">
-        <div class="card-body p-4 bg-dark" >
-          <h3 class="card-title mb-4 text-center text-white">Entrar</h3>
+        <div class="card-body p-4 bg-dark">
+          <h3 class="card-title mb-4 text-center text-white">
+            {% if titulo %}{{ titulo }}{% else %}Entrar{% endif %}
+          </h3>
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {% for error in form.non_field_errors %}
+                {{ error }}<br>
+              {% endfor %}
+            </div>
+          {% endif %}
 
           <form method="post" novalidate>
             {% csrf_token %}
 
-            <div class="mb-3">
-              <label for="id_username" class="form-label text-white">Usuário</label>
-              <input type="text" name="username" autofocus required class="form-control" id="id_username" />
-              {% if form.username.errors %}
-                <div class="text-danger mt-1">
-                  {{ form.username.errors }}
-                </div>
-              {% endif %}
-            </div>
+            {% if titulo == "Alterar senha" %}
+              <div class="mb-3">
+                <label for="old_password" class="form-label text-white">Senha Atual</label>
+                <input type="password" name="old_password" id="old_password" class="form-control {% if form.old_password.errors %}is-invalid{% endif %}" required>
+                {% for error in form.old_password.errors %}
+                  <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+              </div>
 
-            <div class="mb-3">
-              <label for="id_password" class="form-label text-white">Senha</label>
-              <input type="password" name="password" required class="form-control" id="id_password" />
-              {% if form.password.errors %}
-                <div class="text-danger mt-1">
-                  {{ form.password.errors }}
-                </div>
-              {% endif %}
-            </div>
+              <div class="mb-3">
+                <label for="new_password1" class="form-label text-white">Nova Senha</label>
+                <input type="password" name="new_password1" id="new_password1" class="form-control {% if form.new_password1.errors %}is-invalid{% endif %}" required>
+                {% for error in form.new_password1.errors %}
+                  <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+              </div>
 
-            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+              <div class="mb-3">
+                <label for="new_password2" class="form-label text-white">Confirmar Nova Senha</label>
+                <input type="password" name="new_password2" id="new_password2" class="form-control {% if form.new_password2.errors %}is-invalid{% endif %}" required>
+                {% for error in form.new_password2.errors %}
+                  <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+              </div>
+
+              <button type="submit" class="btn btn-warning w-100">Alterar Senha</button>
+
+            {% else %}
+              <div class="mb-3">
+                <label for="username" class="form-label text-white">Usuário</label>
+                <input type="text" name="username" id="username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" required autofocus>
+                {% for error in form.username.errors %}
+                  <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label text-white">Senha</label>
+                <input type="password" name="password" id="password" class="form-control {% if form.password.errors %}is-invalid{% endif %}" required>
+                {% for error in form.password.errors %}
+                  <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100">Entrar</button>
+
+            {% endif %}
           </form>
 
         </div>
       </div>
-      
     </div>
   </div>
 </div>
