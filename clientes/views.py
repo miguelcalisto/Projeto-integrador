@@ -1,6 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+
+from estada.models import Estada
 from .models import Cliente
 from django.core.exceptions import ValidationError
 from .forms import ClienteForm  
@@ -29,8 +32,18 @@ class ClienteUpdateView(LoginRequiredMixin,UpdateView):
     template_name = 'cliente_form.html'
     success_url = reverse_lazy('cliente_list')
 
+from django.contrib import messages
 
 class ClienteDeleteView(LoginRequiredMixin,DeleteView):
     model = Cliente
     template_name = 'cliente_confirm_delete.html'
     success_url = reverse_lazy('cliente_list')
+
+    def dispatch(self, request, *args, **kwargs):
+        cliente = self.get_object()
+
+        if Estada.objects.filter(veiculo__dono=cliente, data_saida__isnull=True).exists():
+            messages.warning(request, "Este cliente possui veículos em estada e não pode ser excluído.")
+            return redirect(self.success_url)
+
+        return super().dispatch(request, *args, **kwargs)

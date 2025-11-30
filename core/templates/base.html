@@ -11,13 +11,11 @@
 
 
         <style>
-        /* Estilização extra opcional para o botão de tema */
         #toggleThemeBtn {
             cursor: pointer;
         }
 
 
-        /* Footer no modo dark */
         body[data-bs-theme="dark"] footer {
             background-color: #ffffff !important;
             color: #000000 !important;
@@ -28,38 +26,32 @@
             background-color: transparent !important;
         }
 
-        /* Navbar no modo dark: fundo branco */
         body[data-bs-theme="dark"] nav.navbar {
             background-color: white !important;
         }
 
-        /* Navbar brand (logo + texto): preto */
         body[data-bs-theme="dark"] nav.navbar .navbar-brand,
         body[data-bs-theme="dark"] nav.navbar .navbar-brand i {
             color: black !important;
         }
 
-        /* Navbar links no modo dark: texto preto escuro */
         body[data-bs-theme="dark"] nav.navbar .nav-link.btn {
             color: #212529 !important; /* preto escuro */
             border-color: #212529 !important;
         }
 
-        /* Hover dos links no modo dark */
         body[data-bs-theme="dark"] nav.navbar .nav-link.btn:hover {
             background-color: #e2e6ea !important;
             color: #212529 !important;
         }
 
-        /* Botão Tema Escuro/Claro no modo dark */
         body[data-bs-theme="dark"] #toggleThemeBtn {
             color: black !important;
             border-color: black !important;
         }
 
-        /* Navbar toggler icon (hamburger) no modo dark */
         body[data-bs-theme="dark"] nav.navbar .navbar-toggler-icon {
-            filter: invert(0) !important; /* ícone escuro */
+            filter: invert(0) !important; 
         }
 
     </style>

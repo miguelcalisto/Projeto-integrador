@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
@@ -32,6 +33,14 @@ class VeiculoDeleteView(LoginRequiredMixin,DeleteView):
     success_url = reverse_lazy('lista_veiculos')
 
 
+    def dispatch(self, request, *args, **kwargs):
+        veiculo = self.get_object()
+        if Estada.objects.filter(veiculo=veiculo, data_saida__isnull=True).exists():
+            messages.warning(request, "Este veículo está em estada ativa e não pode ser excluído.")
+            return redirect(self.success_url)
+        return super().dispatch(request, *args, **kwargs)
+
+from django.contrib import messages
 
 from django.views.generic import DetailView
 class VeiculoDetailView(LoginRequiredMixin, DetailView):
@@ -47,3 +56,4 @@ class VeiculoDetailView(LoginRequiredMixin, DetailView):
 
         context['estada_ativa'] = estada_ativa
         return context
+    
